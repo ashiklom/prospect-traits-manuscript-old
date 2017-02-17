@@ -1,0 +1,9 @@
+# Methods
+
+Bayesian inversion of PROSPECT [@shiklomanov_quantifying_2016]. 
+
+PCA on residuals, following @roth_leaf_2016 .
+
+Calculate some 'T-statistics', following @violle_return_2012 ?
+
+

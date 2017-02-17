@@ -1,0 +1,12 @@
+---
+title: "(Working title) PROSPECT traits"
+author:
+    - Alexey Shiklomanov
+    - Shawn Serbin
+    - Michael Dietze
+bibliography: library.bib
+---
+
+# Abstract
+
+TBA.

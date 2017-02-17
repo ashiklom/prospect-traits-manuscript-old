@@ -1,0 +1,11 @@
+# Results
+
+Here is an example results section.
+
+```{r}
+x <- rnorm(100)
+y <- rnorm(100)
+plot(y ~ x, main = "Random scatter")
+```
+
+The mean of $x \times y$ is `r mean(x*y)`.
