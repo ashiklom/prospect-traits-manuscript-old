@@ -6,5 +6,5 @@ Authors:
 - Michael Dietze
 
 Repositories supporting this manuscript:
-    - Processing of spectral data: [github.com/ashiklom/curated-leafspec][]
-    - Running the inversions: [github.com/ashiklom/prospectinversion][]
+    - [Processing of spectral data](https://github.com/ashiklom/curated-leafspec)
+    - [Running the inversions](https://github.com/ashiklom/prospectinversion)
