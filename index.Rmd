@@ -7,6 +7,6 @@ author:
 bibliography: library.bib
 ---
 
-# Abstract
+# Abstract {-}
 
 TBA.

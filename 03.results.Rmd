@@ -1,0 +1,98 @@
+# Results
+
+```{r setup, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(knitr)
+specdb <- src_sqlite('leaf_spectra.db')
+results <- src_sqlite('results.db') %>% tbl('results')
+```
+
+## RTM inversion / Methodological considerations
+
+```{r densfig, echo = FALSE, fig.cap = sumstatfigcap}
+sumstatfigcap <- paste('Histograms of inversion results by model and parameter')
+params <- c('N', 'Cab', 'Car', 'Cbrown', 'Cw', 'Cm')
+npar <- length(params)
+rsub <- results %>% 
+    filter(parameter %in% params) %>%
+    select(samplecode, modelname, parameter, parametermean) %>%
+    collect() %>%
+    mutate(parameter = factor(parameter, params))
+gpsub <- ggplot(rsub) + aes(x = parametermean) + 
+    facet_grid(modelname ~ parameter, scales = 'free_x') + 
+    geom_histogram()
+gpsub
+rsub %>%
+    group_by(modelname, parameter) %>%
+    summarize(stat = sprintf('%s (%s)',
+                             signif(mean(parametermean, na.rm = TRUE), 3),
+                             signif(sd(parametermean, na.rm = TRUE), 3))) %>%
+    spread(parameter, stat) %>%
+    kable(caption = 'Summary statistics by parameter and model')
+```
+
+NOTE: Not all inversions have finished running yet, and different models are in different states of completeness, so these results should be taken with a grain of salt.
+
+In general, none of the distributions of the means look extreme, and for the most part, they all have the same general shape. 
+
+
+```{r modelagreement, echo = FALSE, fig.cap = modagreecap, fig.width = 10, fig.height = 7}
+modagreecap <- paste('Comparison of parameter estimates across PROSPECT versions.',
+                     'p4 = PROSPECT 4, p5 = PROSPECT 5, p5b = PROSPECT 5B.')
+modagree_dat <- results %>%
+    collect(n = Inf) %>%
+    mutate(mod = recode(modelname,
+                        `PROSPECT 4` = 'p4',
+                        `PROSPECT 5` = 'p5',
+                        `PROSPECT 5B` = 'p5b')) %>%
+    unite(par_mod, parameter, mod) %>%
+    select(samplecode, par_mod, parametermean) %>%
+    spread(par_mod, parametermean)
+param_pairs <- sapply(params[params != 'Cbrown'],
+                      paste0,
+                      combn(c('_p4', '_p5', '_p5b'), 2))
+pairs_dim <- dim(param_pairs) / c(2,1)
+r2mat <- matrix(NA_real_, pairs_dim[1], pairs_dim[2])
+colnames(r2mat) <- colnames(param_pairs)
+rownames(r2mat) <- c('p4 vs. p5', 'p4 vs. p5b', 'p5 vs. p5b')
+slopemat <- r2mat
+intmat <- r2mat
+madeleg <- 0
+par(mfrow = pairs_dim, mar = c(4,4,1,1))
+for (i in seq(1, nrow(param_pairs), 2)) {
+    for (p in colnames(param_pairs)) {
+        ccols <- param_pairs[i:(i+1), p]
+        if (all(ccols %in% colnames(modagree_dat))) {
+            form <- paste(ccols, collapse = ' ~ ')
+            fit <- suppressMessages(lmodel2::lmodel2(form, data = modagree_dat))
+            int <- fit$regression.results[2, 'Intercept']
+            slope <- fit$regression.results[2, 'Slope']
+            r2 <- fit$rsquare
+            intmat[i - i %/% 2, p] <- int
+            slopemat[i - i %/% 2, p] <- slope
+            r2mat[i - i %/% 2, p] <- fit$rsquare
+            plot(formula(form), data = modagree_dat, pch = 20, col = 'grey50')
+            abline(0, 1, col = 'red', lty = 'dashed', lwd = 2)
+            abline(int, slope, col = 'blue', lwd = 2)
+            legend('bottomright', paste('R2 = ', signif(r2, 3)), bty = 'n')
+        } else {
+            frame()
+            if (!madeleg) {
+                madeleg <- 1
+                legend('center', c('1:1 line', 'MA regression'), 
+                       lty = c('dashed', 'solid'),
+                       lwd = 2, col = c('red', 'blue'))
+            }
+        }
+    }
+}
+```
+
+Agreement between models is strongly parameter dependent.
+The most consistent agreement was for the water (Cw) and dry matter content (Cm) parameters.
+Agreement between PROSPECT 4 and 5 was substantially better than agreement of either model with PROSPECT 5B.
+
+```{r validation}
+traits <- tbl(specdb, 'samples') %>%
+    left_join(tbl(specdb, 'trait_data'))
+```
