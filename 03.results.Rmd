@@ -1,15 +1,19 @@
 # Results
 
 ```{r setup, echo = FALSE, message = FALSE}
+library(methods)
 library(tidyverse)
 library(knitr)
+library(udunits2)
 specdb <- src_sqlite('leaf_spectra.db')
 results <- src_sqlite('results.db') %>% tbl('results')
+
+opts_chunk$set(echo = FALSE, message = FALSE)
 ```
 
 ## RTM inversion / Methodological considerations
 
-```{r densfig, echo = FALSE, fig.cap = sumstatfigcap}
+```{r densfig, fig.cap = sumstatfigcap}
 sumstatfigcap <- paste('Histograms of inversion results by model and parameter')
 params <- c('N', 'Cab', 'Car', 'Cbrown', 'Cw', 'Cm')
 npar <- length(params)
@@ -36,7 +40,7 @@ NOTE: Not all inversions have finished running yet, and different models are in 
 In general, none of the distributions of the means look extreme, and for the most part, they all have the same general shape. 
 
 
-```{r modelagreement, echo = FALSE, fig.cap = modagreecap, fig.width = 10, fig.height = 7}
+```{r modelagreement, fig.cap = modagreecap, fig.width = 10, fig.height = 7}
 modagreecap <- paste('Comparison of parameter estimates across PROSPECT versions.',
                      'p4 = PROSPECT 4, p5 = PROSPECT 5, p5b = PROSPECT 5B.')
 modagree_dat <- results %>%
@@ -48,9 +52,8 @@ modagree_dat <- results %>%
     unite(par_mod, parameter, mod) %>%
     select(samplecode, par_mod, parametermean) %>%
     spread(par_mod, parametermean)
-param_pairs <- sapply(params[params != 'Cbrown'],
-                      paste0,
-                      combn(c('_p4', '_p5', '_p5b'), 2))
+modcodes <- c('p4', 'p5', 'p5b')
+param_pairs <- sapply(params[params != 'Cbrown'], paste, combn(modcodes, 2), sep = '_')
 pairs_dim <- dim(param_pairs) / c(2,1)
 r2mat <- matrix(NA_real_, pairs_dim[1], pairs_dim[2])
 colnames(r2mat) <- colnames(param_pairs)
@@ -93,6 +96,85 @@ The most consistent agreement was for the water (Cw) and dry matter content (Cm)
 Agreement between PROSPECT 4 and 5 was substantially better than agreement of either model with PROSPECT 5B.
 
 ```{r validation}
-traits <- tbl(specdb, 'samples') %>%
-    left_join(tbl(specdb, 'trait_data'))
+
+traits <- tbl(specdb, 'trait_data') %>%
+    collect() %>%
+    mutate(trait = recode(trait, `leaf_mass_per_per_area` = 'leaf_mass_per_area')) %>%
+    group_by(samplecode, trait) %>%
+    summarize(traitvalue = mean(traitvalue)) %>%
+    ungroup() %>%
+    right_join(tbl(specdb, 'samples') %>% collect()) %>%
+    spread(trait, traitvalue) %>%
+    inner_join(modagree_dat) %>%
+    mutate(Cab_p4_SI = ud.convert(Cab_p4, 'ug cm-2', 'kg m-2'),
+           Cab_p5_SI = ud.convert(Cab_p5, 'ug cm-2', 'kg m-2'),
+           Cab_p5b_SI = ud.convert(Cab_p5b, 'ug cm-2', 'kg m-2'),
+           Car_p5_SI = ud.convert(Car_p5, 'ug cm-2', 'kg m-2'),
+           Car_p5b_SI = ud.convert(Car_p5b, 'ug cm-2', 'kg m-2'),
+           Cw_p4_SI = ud.convert(Cw_p4, 'g cm-2', 'kg m-2'),
+           Cw_p5_SI = ud.convert(Cw_p5, 'g cm-2', 'kg m-2'),
+           Cw_p5b_SI = ud.convert(Cw_p5b, 'g cm-2', 'kg m-2'),
+           Cm_p4_SI = ud.convert(Cm_p4, 'g cm-2', 'kg m-2'),
+           Cm_p5_SI = ud.convert(Cm_p5, 'g cm-2', 'kg m-2'),
+           Cm_p5b_SI = ud.convert(Cm_p5b, 'g cm-2', 'kg m-2'))
+
+valid_plot <- function(xvar, yvar, modcodes, data, ...) {
+    ny <- length(modcodes)
+    par(mfrow = c(1, ny), mar = c(3, 3, 2, 1), oma = c(2, 2, 0, 0))
+    for (y in paste(yvar, modcodes, 'SI', sep = '_')) {
+        form <- formula(paste(y, xvar, sep = ' ~ '))
+        fit <- lm(form, data = data)
+        r2 <- summary(fit)$r.squared
+        plot(form, data = data, pch = 19, main = y, col = 'grey50')
+        abline(0, 1, col = 'red', lty = 'dashed', lwd = 2)
+        abline(fit, col = 'blue', lty = 'solid', lwd = 2)
+        legend('bottomright', paste('R2 = ', signif(r2, 3)), bty = 'n')
+    }
+    mtext('Observed', side = 1, outer = TRUE)
+    mtext('PROSPECT inversion estimate', side = 2, outer = TRUE)
+}
+    
+# Chlorophyll
+valid_plot('leaf_chltot_per_area', 'Cab', modcodes, traits)
+
+# Carotenoids
+valid_plot('leaf_cartot_per_area', 'Car', modcodes[-1], traits)
+
+# Leaf water content
+valid_plot('leaf_water_thickness', 'Cw', modcodes, 
+           filter(traits, leaf_water_thickness < 1))
+
+# Leaf dry matter content
+valid_plot('leaf_mass_per_area', 'Cm', modcodes, traits)
+```
+
+Overall, PROSPECT 5B had the best inversion accuracy, with the highest R2 values for all parameters except dry matter content ("Cm").
+By parameter, the best inversion accuracy was achieved for leaf water content ("Cw"), with all remaining parameters having roughly comparable, poor inversion accuracy.
+
+```{r validation_ggplot}
+
+gg_valid <- tbl(specdb, 'species') %>%
+    inner_join(tbl(specdb, 'species_attributes')) %>%
+    collect() %>%
+    right_join(traits) %>%
+    mutate(lg = paste(leaf_type, growth_form))
+
+valid_ggplot <- function(xvar, yvar, data, ...) {
+    indat <- filter_(data, .dots = sprintf('!is.na(%s)', c(xvar, yvar)))
+    ggplot(indat) + 
+        aes_string(x = xvar, y = yvar, ...) + 
+        #facet_wrap(~projectcode) + 
+        geom_point(alpha = 0.5, size = 1) + 
+        geom_smooth(method = 'lm', se = FALSE) + 
+        geom_abline(intercept = 0, slope = 1, linetype = 'dashed') + 
+        scale_color_brewer(palette = 'Dark2')
+}
+
+valid_ggplot('leaf_chltot_per_area', 'Cab_p5b_SI', gg_valid, color = 'lg')
+valid_ggplot('leaf_cartot_per_area', 'Car_p5b_SI', gg_valid, color = 'projectcode')
+valid_ggplot('leaf_water_thickness', 'Cw_p5b_SI', 
+             filter(gg_valid, leaf_water_thickness < 1),
+             color = 'projectcode')
+valid_ggplot('leaf_mass_per_area', 'Cm_p5b_SI', gg_valid,
+             color = 'leaf_type')
 ```
