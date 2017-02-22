@@ -51,7 +51,7 @@ rownames(r2mat) <- c('p4 vs. p5', 'p4 vs. p5b', 'p5 vs. p5b')
 slopemat <- r2mat
 intmat <- r2mat
 madeleg <- 0
-par(mfrow = pairs_dim, mar = c(4,4,1,1))
+oldpar <- par(mfrow = pairs_dim, mar = c(4,4,1,1))
 for (i in seq(1, nrow(param_pairs), 2)) {
     for (p in colnames(param_pairs)) {
         ccols <- param_pairs[i:(i+1), p]
@@ -105,7 +105,7 @@ traits <- tbl(specdb, 'trait_data') %>%
 
 valid_plot <- function(measure, estimate, modcodes, data, ...) {
     ny <- length(modcodes)
-    par(mfrow = c(1, ny), mar = c(3, 3, 2, 1), oma = c(2, 2, 2, 0))
+    oldpar <- par(mfrow = c(1, ny), mar = c(3, 3, 2, 1), oma = c(2, 2, 2, 0))
     for (i in seq_along(modcodes)) {
         estmu <- paste('mu', estimate, modcodes[i], 'SI', sep = '_')
         esthi <- paste('hi', estimate, modcodes[i], 'SI', sep = '_')
@@ -248,11 +248,137 @@ They may change if I revise the model used to estimate spectra._
 
 PCA on all values
 
-PCA on species means
+```{r pcaall, fig.cap = pcaall_cap}
 
-PCA on within-species variability (species mean-centered values)
+pcaall_cap <- paste('Principal component analysis on all PROSPECT traits')
 
-ANOVA on all values
+pca_pars <- paste('mu', params, mod, sep = '_')
+names(pca_pars) <- params
 
-Relationship of traits with climate (mean annual temperature and precipitation)
+pcaall_dat <- gg_valid %>%
+    rename_(.dots = pca_pars) %>%
+    #mutate_at(params, log) %>%
+    filter_(sprintf('!is.na(%s)', params))
 
+draw_pca <- function(dat, char) {
+    fit <- princomp(dat %>% select_(.dots = params), cor = TRUE)
+    biplot(fit, xlabs = rep(char, nrow(dat)))
+}
+
+draw_pca(pcaall_dat, '.')
+
+```
+
+```{r pcasp, fig.cap = pcasp_cap}
+
+pcasp_cap <- paste('Principal components analysis on species means.')
+pcasp_dat <- pcaall_dat %>%
+    group_by(speciescode) %>%
+    summarize_at(params, mean)
+draw_pca(pcasp_dat, 'x')
+
+```
+
+```{r pcares, fig.cap = pcares_cap}
+
+pcares_cap <- paste('Principal components analysis on residuals',
+                    'from species means')
+pcares_dat <- pcaall_dat %>%
+    group_by(speciescode) %>%
+    mutate_at(params, (function(.) . - mean(.))) %>%
+    ungroup
+draw_pca(pcares_dat, '.')
+
+```
+
+The within- and across-species relationships between parameters are different.
+Across species, there are two orthagonal axes of variability, with the primary axis driven by pigment concentrations and the secondary axis driven by leaf structure (as manifested by contents of brown and dry matter contents, water thickness, and number of mesophyll layers).
+Within species, the primary axis of variability is **???**
+
+```{r anovaplot, fig.cap = anovaplot_cap}
+
+anovaplot_cap <- paste('Partitioning variability in PROSPECT traits')
+
+anovadat <- pcaall_dat %>% 
+    left_join(tbl(specdb, 'plots') %>% 
+              select(sitecode, plotcode) %>% 
+              collect) %>% 
+    left_join(site_info)
+
+vars <- tribble(
+    ~variable, ~color, 
+    'leaf_type', 'green4',
+    'phenology', 'brown',
+    'growth_form', 'purple',
+    'myco_asso', 'orange',
+    'shade_tolerance', 'yellow',
+    'speciescode', 'green1',
+    'sitecode', 'red',
+    'plotcode', 'cyan')
+          
+anova_param <- function(dat, param, vars) {
+    form <- formula(paste(param, '~', paste(vars, collapse = ' + ')))
+    fit <- lm(formula = form, data = dat)
+    anova_raw <- anova(fit)
+    anova_dat <- anova_raw[, 'Sum Sq', drop = FALSE]
+    colnames(anova_dat) <- param
+    out <- as_data_frame(anova_dat) %>% rownames_to_column('variable')
+    return(out)
+}
+
+anova_list <- lapply(params, function(x) anova_param(anovadat, x, vars$variable))
+
+anova_dat <- Reduce((function(...) merge(..., by = 'variable')), anova_list) %>%
+    gather(parameter, value, -variable) %>%
+    mutate(variable = factor(variable, rev(c(vars$variable, 'Residuals'))),
+           parameter = factor(parameter, params)) %>%
+    group_by(parameter) %>%
+    mutate(norm_value = value / sum(value))
+
+ggplot(anova_dat) + 
+    aes(x = parameter, y = norm_value, fill = variable) + 
+    geom_bar(stat = 'identity') + 
+    scale_fill_manual(values = c(vars$color, 'grey'))
+    
+```
+
+```{r traitsclimate, fig.cap = traitsclimate_cap}
+
+traitsclimate_cap <- paste('Relationship of traits with climate')
+
+traitcli_dat <- anovadat %>%
+    select_(.dots = c('samplecode', 'speciescode', 
+                      params, 'temp', 'prec')) %>%
+    filter(!is.na(temp), !is.na(prec)) %>%
+    gather(parameter, value, -samplecode, -temp, -prec, -speciescode) %>%
+    gather(climvar, climval, -samplecode, -speciescode, -parameter, -value)
+
+traitcli_plt <- ggplot(traitcli_dat) + 
+    aes(x = climval, y = value) + 
+    geom_point(color = 'grey50') + 
+    geom_smooth(method = 'lm', se = FALSE) +
+    facet_wrap(~parameter + climvar, scales = 'free')
+
+plot(traitcli_plt)
+
+```
+
+```{r traitsclimatesp, fig.cap = traitsclimatesp_cap}
+
+traitsclimatesp_cap <- paste('Relationship of traits with climate: Species means')
+traitcli_plt %+% 
+    (traitcli_dat %>% 
+     group_by(speciescode, parameter, climvar, climval) %>%
+     summarize(value = mean(value)))
+
+```
+
+```{r traitsclimateres, fig.cap = traitsclimateres_cap}
+
+traitsclimateres_cap <- paste('Relationship of traits with climate:', 
+                              'Species mean residuals')
+traitcli_plt %+% 
+    (traitcli_dat %>% 
+     group_by(speciescode, parameter, climvar) %>%
+     mutate(value = value - mean(value, na.rm = TRUE)))
+```
