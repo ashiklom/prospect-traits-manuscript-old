@@ -4,4 +4,6 @@ all:
 results:
 	rm -f results.db
 	scripts/get_results.sh
-	sqlite3 results.db < results.sql
+
+site_info.rds:
+	Rscript scripts/make_site_info.R
