@@ -1,5 +1,10 @@
-all:
-	Rscript -e 'bookdown::render_book("index.Rmd", "bookdown::gitbook")'
+all: build deploy
+
+deploy:
+	./_deploy.sh
+
+build:
+	./_build.sh
 
 results:
 	rm -f results.db

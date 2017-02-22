@@ -9,7 +9,7 @@ npar <- length(params)
 rsub <- results %>% 
     filter(parameter %in% params) %>%
     select(samplecode, modelname, parameter, parametermean) %>%
-    collect() %>%
+    collect(n = Inf) %>%
     mutate(parameter = factor(parameter, params))
 gpsub <- ggplot(rsub) + aes(x = parametermean) + 
     facet_grid(modelname ~ parameter, scales = 'free_x') + 
@@ -90,12 +90,12 @@ Agreement between PROSPECT 4 and 5 was substantially better than agreement of ei
 valid_cap <- 'Comparison of spectral trait estimates with direct measurements'
 
 traits <- tbl(specdb, 'trait_data') %>%
-    collect() %>%
+    collect(n = Inf) %>%
     mutate(trait = recode(trait, `leaf_mass_per_per_area` = 'leaf_mass_per_area')) %>%
     group_by(samplecode, trait) %>%
     summarize(traitvalue = mean(traitvalue)) %>%
     ungroup() %>%
-    right_join(tbl(specdb, 'samples') %>% collect()) %>%
+    right_join(tbl(specdb, 'samples') %>% collect(n = Inf)) %>%
     spread(trait, traitvalue) %>%
     inner_join(modagree_dat) %>%
     mutate_at(vars(matches('Ca(b|r)')),
@@ -144,7 +144,7 @@ mod <- 'p5b'
 
 gg_valid <- tbl(specdb, 'species') %>%
     inner_join(tbl(specdb, 'species_attributes')) %>%
-    collect() %>%
+    collect(n = Inf) %>%
     right_join(traits) %>%
     mutate(lg = paste(leaf_type, growth_form))
 
