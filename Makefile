@@ -7,7 +7,6 @@ build:
 	./_build.sh
 
 results:
-	rm -f results.db
 	scripts/get_results.sh
 
 site_info.rds:
