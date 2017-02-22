@@ -1,16 +1,5 @@
 # Results
 
-```{r setup, echo = FALSE, message = FALSE}
-library(methods)
-library(tidyverse)
-library(knitr)
-library(udunits2)
-specdb <- src_sqlite('leaf_spectra.db')
-results <- src_sqlite('results.db') %>% tbl('results')
-
-opts_chunk$set(echo = FALSE, message = FALSE)
-```
-
 ## RTM inversion / Methodological considerations
 
 ```{r densfig, fig.cap = sumstatfigcap}
@@ -43,17 +32,18 @@ In general, none of the distributions of the means look extreme, and for the mos
 ```{r modelagreement, fig.cap = modagreecap, fig.width = 10, fig.height = 7}
 modagreecap <- paste('Comparison of parameter estimates across PROSPECT versions.',
                      'p4 = PROSPECT 4, p5 = PROSPECT 5, p5b = PROSPECT 5B.')
+modcodes <- c('PROSPECT 4' = 'p4', 'PROSPECT 5' = 'p5', 'PROSPECT 5B' = 'p5b')
 modagree_dat <- results %>%
     collect(n = Inf) %>%
-    mutate(mod = recode(modelname,
-                        `PROSPECT 4` = 'p4',
-                        `PROSPECT 5` = 'p5',
-                        `PROSPECT 5B` = 'p5b')) %>%
+    mutate(mod = modcodes[modelname]) %>%
     unite(par_mod, parameter, mod) %>%
-    select(samplecode, par_mod, parametermean) %>%
-    spread(par_mod, parametermean)
-modcodes <- c('p4', 'p5', 'p5b')
-param_pairs <- sapply(params[params != 'Cbrown'], paste, combn(modcodes, 2), sep = '_')
+    select(samplecode, par_mod, 
+           mu = parametermean, lo = parameterq025, hi = parameterq975) %>%
+    data.table::setDT(.) %>%
+    data.table::dcast(samplecode ~ par_mod, value.var = c('mu', 'lo', 'hi')) %>%
+    as_data_frame
+param_pairs <- sapply(params[params != 'Cbrown'],
+                      function(x) paste('mu', x, combn(modcodes, 2), sep = '_'))
 pairs_dim <- dim(param_pairs) / c(2,1)
 r2mat <- matrix(NA_real_, pairs_dim[1], pairs_dim[2])
 colnames(r2mat) <- colnames(param_pairs)
@@ -95,7 +85,9 @@ Agreement between models is strongly parameter dependent.
 The most consistent agreement was for the water (Cw) and dry matter content (Cm) parameters.
 Agreement between PROSPECT 4 and 5 was substantially better than agreement of either model with PROSPECT 5B.
 
-```{r validation}
+```{r validation, fig.cap = valid_cap}
+
+valid_cap <- 'Comparison of spectral trait estimates with direct measurements'
 
 traits <- tbl(specdb, 'trait_data') %>%
     collect() %>%
@@ -106,52 +98,49 @@ traits <- tbl(specdb, 'trait_data') %>%
     right_join(tbl(specdb, 'samples') %>% collect()) %>%
     spread(trait, traitvalue) %>%
     inner_join(modagree_dat) %>%
-    mutate(Cab_p4_SI = ud.convert(Cab_p4, 'ug cm-2', 'kg m-2'),
-           Cab_p5_SI = ud.convert(Cab_p5, 'ug cm-2', 'kg m-2'),
-           Cab_p5b_SI = ud.convert(Cab_p5b, 'ug cm-2', 'kg m-2'),
-           Car_p5_SI = ud.convert(Car_p5, 'ug cm-2', 'kg m-2'),
-           Car_p5b_SI = ud.convert(Car_p5b, 'ug cm-2', 'kg m-2'),
-           Cw_p4_SI = ud.convert(Cw_p4, 'g cm-2', 'kg m-2'),
-           Cw_p5_SI = ud.convert(Cw_p5, 'g cm-2', 'kg m-2'),
-           Cw_p5b_SI = ud.convert(Cw_p5b, 'g cm-2', 'kg m-2'),
-           Cm_p4_SI = ud.convert(Cm_p4, 'g cm-2', 'kg m-2'),
-           Cm_p5_SI = ud.convert(Cm_p5, 'g cm-2', 'kg m-2'),
-           Cm_p5b_SI = ud.convert(Cm_p5b, 'g cm-2', 'kg m-2'))
+    mutate_at(vars(matches('Ca(b|r)')),
+              funs('SI' = udunits2::ud.convert(., 'ug cm-2', 'kg m-2'))) %>%
+    mutate_at(vars(matches('C(w|m)')),
+              funs('SI' = udunits2::ud.convert(., 'g cm-2', 'kg m-2')))
 
-valid_plot <- function(xvar, yvar, modcodes, data, ...) {
+valid_plot <- function(measure, estimate, modcodes, data, ...) {
     ny <- length(modcodes)
-    par(mfrow = c(1, ny), mar = c(3, 3, 2, 1), oma = c(2, 2, 0, 0))
-    for (y in paste(yvar, modcodes, 'SI', sep = '_')) {
-        form <- formula(paste(y, xvar, sep = ' ~ '))
+    par(mfrow = c(1, ny), mar = c(3, 3, 2, 1), oma = c(2, 2, 2, 0))
+    for (i in seq_along(modcodes)) {
+        estmu <- paste('mu', estimate, modcodes[i], 'SI', sep = '_')
+        esthi <- paste('hi', estimate, modcodes[i], 'SI', sep = '_')
+        estlo <- paste('lo', estimate, modcodes[i], 'SI', sep = '_')
+        form <- formula(paste(measure, estmu, sep = ' ~ '))
         fit <- lm(form, data = data)
         r2 <- summary(fit)$r.squared
-        plot(form, data = data, pch = 19, main = y, col = 'grey50')
+        plot(form, data = data, main = names(modcodes)[i], type = 'n')
+        segments(y0 = data[[estmu]], x0 = data[[estlo]], x1 = data[[esthi]], col = 'grey80')
+        points(form, data = data, pch = 19, col = 'grey50')
         abline(0, 1, col = 'red', lty = 'dashed', lwd = 2)
         abline(fit, col = 'blue', lty = 'solid', lwd = 2)
         legend('bottomright', paste('R2 = ', signif(r2, 3)), bty = 'n')
     }
-    mtext('Observed', side = 1, outer = TRUE)
-    mtext('PROSPECT inversion estimate', side = 2, outer = TRUE)
+    mtext('PROSPECT inversion estimate', side = 1, outer = TRUE)
+    mtext('Observed', side = 2, outer = TRUE)
+    mtext(paste(estimate, 'validated against', measure), side = 3, outer = TRUE)
 }
     
-# Chlorophyll
 valid_plot('leaf_chltot_per_area', 'Cab', modcodes, traits)
-
-# Carotenoids
 valid_plot('leaf_cartot_per_area', 'Car', modcodes[-1], traits)
-
-# Leaf water content
 valid_plot('leaf_water_thickness', 'Cw', modcodes, 
            filter(traits, leaf_water_thickness < 1))
-
-# Leaf dry matter content
 valid_plot('leaf_mass_per_area', 'Cm', modcodes, traits)
 ```
 
 Overall, PROSPECT 5B had the best inversion accuracy, with the highest R2 values for all parameters except dry matter content ("Cm").
 By parameter, the best inversion accuracy was achieved for leaf water content ("Cw"), with all remaining parameters having roughly comparable, poor inversion accuracy.
 
-```{r validation_ggplot}
+```{r validationggplot, fig.cap = valid_ggplot_cap}
+
+valid_ggplot_cap <- paste('Comparison of spectral trait estimates with direct', 
+                          'measurements, by project and species attributes')
+
+mod <- 'p5b'
 
 gg_valid <- tbl(specdb, 'species') %>%
     inner_join(tbl(specdb, 'species_attributes')) %>%
@@ -159,22 +148,111 @@ gg_valid <- tbl(specdb, 'species') %>%
     right_join(traits) %>%
     mutate(lg = paste(leaf_type, growth_form))
 
-valid_ggplot <- function(xvar, yvar, data, ...) {
-    indat <- filter_(data, .dots = sprintf('!is.na(%s)', c(xvar, yvar)))
+valid_vec <- c('Cab' = 'leaf_chltot_per_area',
+               'Car' = 'leaf_cartot_per_area',
+               'Cw' = 'leaf_water_thickness',
+               'Cm' = 'leaf_mass_per_area')
+
+valid_ggplot <- function(measure, estimate, data, ...) {
+    estmu <- paste('mu', estimate, mod, 'SI', sep = '_')
+    estlo <- paste('lo', estimate, mod, 'SI', sep = '_')
+    esthi <- paste('hi', estimate, mod, 'SI', sep = '_')
+    indat <- filter_(data, .dots = sprintf('!is.na(%s)', 
+                                           c(measure, estmu, estlo, esthi)))
+    xrange <- c(0, max(indat[[estmu]]))
+    yrange <- c(0, max(indat[[measure]]))
     ggplot(indat) + 
-        aes_string(x = xvar, y = yvar, ...) + 
-        #facet_wrap(~projectcode) + 
-        geom_point(alpha = 0.5, size = 1) + 
+        aes_string(x = estmu, y = measure, xmin = estlo, xmax = esthi, ...) + 
+        geom_errorbarh(alpha = 0.15, size = 0.5) +
+        geom_point(alpha = 0.5, size = 1, shape = 21, color = 'black') + 
         geom_smooth(method = 'lm', se = FALSE) + 
         geom_abline(intercept = 0, slope = 1, linetype = 'dashed') + 
-        scale_color_brewer(palette = 'Dark2')
+        scale_color_brewer(palette = 'Dark2') + 
+        scale_fill_brewer(palette = 'Dark2') +
+        coord_cartesian(xlim = xrange, ylim = yrange)
 }
 
-valid_ggplot('leaf_chltot_per_area', 'Cab_p5b_SI', gg_valid, color = 'lg')
-valid_ggplot('leaf_cartot_per_area', 'Car_p5b_SI', gg_valid, color = 'projectcode')
-valid_ggplot('leaf_water_thickness', 'Cw_p5b_SI', 
-             filter(gg_valid, leaf_water_thickness < 1),
-             color = 'projectcode')
-valid_ggplot('leaf_mass_per_area', 'Cm_p5b_SI', gg_valid,
-             color = 'leaf_type')
+for (i in seq_along(valid_vec)) {
+    v <- valid_vec[i]
+    nv <- names(valid_vec)[i]
+    dat <- gg_valid
+    if (v == 'leaf_water_thickness') {
+        dat <- filter(dat, leaf_water_thickness < 1)
+    }
+    plot(valid_ggplot(v, nv, dat, color = 'projectcode', fill = 'projectcode'))
+    plot(valid_ggplot(v, nv, dat, color = 'leaf_type', fill = 'leaf_type'))
+    plot(valid_ggplot(v, nv, dat, color = 'growth_form', fill = 'growth_form'))
+    plot(valid_ggplot(v, nv, dat, color = 'lg', fill = 'lg'))
+}
+
 ```
+
+```{r variancecompare, fig.cap=vccap}
+
+vccap <- 'Comparison of variance between spectral estimates and direct measurements.'
+
+variance_compare <- function(measure, estimate, data, ...) {
+    mu <- paste('mu', estimate, mod, 'SI', sep = '_')
+    indat <- filter_(data, .dots = sprintf('!is.na(%s)', c(measure, mu))) %>%
+        summarize_at(c(measure, mu), var) %>%
+        rename_(.dots = c('measure' = measure, 'estimate' = mu))
+    return(indat)
+}
+
+variance_dat <- mapply(variance_compare,
+                       valid_vec,
+                       names(valid_vec),
+                       MoreArgs = list(data = gg_valid), SIMPLIFY = FALSE) %>% 
+    bind_rows(.id = 'param') %>%
+    gather(variable, variance, -param)
+
+ggplot(variance_dat) + 
+    aes(x = variable, y = variance) + 
+    geom_bar(stat = 'identity') + 
+    facet_wrap(~param, scales = 'free')
+```
+
+In all cases, the measured values had a higher variance than estimates from spectral inversion. 
+The largest difference in variance between measured values and spectral estimates was for carotenoid and dry matter contents, while variance was closest for chlorophyll content.
+It should be noted that this comparison only applies to spectral values which have associated trait measurements -- i.e. the actual variance for all traits estimated from spectra may be considerably different.
+
+```{r covariancecompare, fig.cap = cvccap}
+
+cvccap <- paste('Comparison of covariance between spectral estimates ', 
+                'and direct measurements')
+cvparcols <- paste('mu', names(valid_vec), mod, 'SI', sep = '_')
+names(cvparcols) <- names(valid_vec)
+cvdat <- gg_valid %>%
+    filter_(.dots = paste(sprintf('!is.na(%s)', valid_vec), collapse = ' | '))
+
+mycorplot <- function(data, title, cols, ...) {
+    mat <- cor(select_(data, .dots = cols), use = 'pairwise.complete.obs')
+    cols <- colorRampPalette(c('red', 'grey30', 'blue'))(20)
+    corrplot::corrplot.mixed(mat, lower = 'ellipse', upper = 'number', 
+                             main = title, mar = c(0, 0, 1, 0), 
+                             col = cols, ...)
+}
+par(mfrow = c(1, 2))
+mycorplot(cvdat, 'Measured', valid_vec)
+mycorplot(cvdat, 'Estimate', cvparcols)
+
+```
+
+In all cases, covariance between traits is comparable or stronger in the measured values than in the spectral inversion estimates.
+Note that these results may not be completely reliable because the spectral estimates have no missing values (though they are filtered to the samples that have at least one trait measurement) whereas the trait data do.
+
+## Sources of trait variability 
+
+_NOTE: All of the results in this section assume that the values above are accurate.
+They may change if I revise the model used to estimate spectra._
+
+PCA on all values
+
+PCA on species means
+
+PCA on within-species variability (species mean-centered values)
+
+ANOVA on all values
+
+Relationship of traits with climate (mean annual temperature and precipitation)
+

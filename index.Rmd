@@ -7,6 +7,21 @@ author:
 bibliography: library.bib
 ---
 
+```{r setup-all, echo = FALSE, message = FALSE}
+library(knitr)
+
+# Set global chunk options
+opts_chunk$set(echo = FALSE, message = FALSE, cache = TRUE)
+
+library(methods)
+library(tidyverse)
+
+# Load spectra and results databases
+specdb <- src_sqlite('leaf_spectra.db')
+results <- src_sqlite('results.db') %>% tbl('results')
+```
+
 # Abstract {-}
 
 TBA.
+

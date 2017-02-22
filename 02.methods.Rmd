@@ -1,9 +1,101 @@
 # Methods
 
+## Data
+
+```{r setup-methods}
+
+if (!file.exists('site_info.rds')) {
+
+    sites <- tbl(specdb, 'sites') %>%
+        left_join(tbl(specdb, 'plots')) %>%
+        group_by(sitecode) %>%
+        summarize(site_lat = mean(latitude),
+                  site_lon = mean(longitude)) %>%
+        filter(!is.na(site_lat), !is.na(site_lon)) %>%
+        collect
+
+    options(noaakey = 'lkgCQKelzCVzjYJuRUYUYLcIrBrZEeoM')
+    #data_sets <- ncdc_datasets(limit = 100)
+    #data_types <- ncdc_datatypes(datasetid = 'GSOY', limit = 1000)
+
+    datasetid <- 'GSOY'
+    datatypeid <- c('TAVG', 'PRCP')
+
+    # Find closest station
+    station_list <- list()
+    options(warn = 2)
+    for (i in seq_len(nrow(sites))) {
+    #for (i in 8:nrow(sites)) {
+        print(i)
+        slat <- sites[[i, 'site_lat']]
+        slon <- sites[[i, 'site_lon']]
+        dst <- 1
+        stat <- rnoaa::ncdc_stations(datasetid = datasetid,
+                                     datatypeid = datatypeid,
+                                     extent = c(slat - dst, slon - dst, 
+                                                slat + dst, slon + dst))
+        dff <- (slat - stat$data$latitude)^2 + (slon - stat$data$longitude)^2
+        station_list[[i]] <- stat$data[which.min(dff),]
+        Sys.sleep(1)
+    }
+    sitedat <- bind_cols(sites, bind_rows(station_list))
+    #saveRDS(sitedat, 'sitedat.rds')
+
+    dat <- rnoaa::ncdc(datasetid = datasetid,
+                       datatypeid = datatypeid,
+                       startdate = '2005-01-01',
+                       enddate = '2014-01-01',
+                       stationid = sitedat$id,
+                       limit = 1000)
+
+    site_info <- dat$data %>%
+        spread(datatype, value) %>%
+        group_by(station) %>%
+        summarize(temp = mean(TAVG, na.rm = TRUE),
+                prec = mean(PRCP, na.rm = TRUE)) %>%
+        right_join(sitedat, by = c('station' = 'id'))
+
+    saveRDS(site_info, 'site_info.rds')
+} else {
+    site_info <- readRDS('site_info.rds')
+}
+
+options(warn = 0)
+
+```
+
+```{r sitemap, fig.cap = sitemap_cap}
+
+sitemap_cap <- paste('Sample distribution in geographic and climate space')
+
+sitemap_dat <- tbl(specdb, 'samples') %>%
+    left_join(tbl(specdb, 'plots') %>% select(plotcode, sitecode)) %>%
+    left_join(tbl(specdb, 'sites')) %>%
+    collect %>%
+    left_join(site_info) %>%
+    count(sitecode, site_lat, site_lon, temp, prec, projectcode)
+
+x_lims <- round(range(sitemap_dat$site_lon, na.rm = TRUE))
+y_lims <- round(range(sitemap_dat$site_lat, na.rm = TRUE))
+ggplot(sitemap_dat) + 
+    aes(x = site_lon, y = site_lat, size = n, color = projectcode) +
+    borders('world', xlim = x_lims, ylim = y_lims) +
+    geom_point()
+
+ggplot(sitemap_dat) + 
+    aes(x = temp, y = prec, size = n, color = projectcode) + 
+    geom_point()
+
+```
+
+## Inversion approach
+
 Bayesian inversion of PROSPECT [@shiklomanov_quantifying_2016]. 
+
+## Statistical analysis
 
 PCA on residuals, following @roth_leaf_2016 .
 
-Calculate some 'T-statistics', following @violle_return_2012 ?
-
+TODO:
+    * Calculate some 'T-statistics', following @violle_return_2012 ?
 
