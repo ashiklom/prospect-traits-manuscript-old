@@ -1,0 +1,16 @@
+Package: placeholder
+Title: Placeholder for travis build
+Version: 0.0.1
+Imports: 
+    methods,
+    bookdown, 
+    tidyverse,
+    RSQLite,
+    rnoaa,
+    PEcAnRTM,
+    data.table,
+    lmodel2,
+    udunits2,
+    corrplot
+Remotes:
+    github::ashiklom/pecan/modules/rtm
