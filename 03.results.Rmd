@@ -246,7 +246,7 @@ Note that these results may not be completely reliable because the spectral esti
 _NOTE: All of the results in this section assume that the values above are accurate.
 They may change if I revise the model used to estimate spectra._
 
-PCA on all values
+### Correlations among PROSPECT traits
 
 ```{r pcaall, fig.cap = pcaall_cap}
 
@@ -295,7 +295,9 @@ The within- and across-species relationships between parameters are different.
 Across species, there are two orthagonal axes of variability, with the primary axis driven by pigment concentrations and the secondary axis driven by leaf structure (as manifested by contents of brown and dry matter contents, water thickness, and number of mesophyll layers).
 Within species, the primary axis of variability is **???**
 
-```{r anovaplot, fig.cap = anovaplot_cap}
+### Drivers of variability in PROSPECT traits
+
+```{r anovaplot, fig.cap = anovaplot_cap, fig.width = 10, fig.height = 10}
 
 anovaplot_cap <- paste('Partitioning variability in PROSPECT traits')
 
@@ -323,12 +325,14 @@ anova_param <- function(dat, param, vars) {
     anova_dat <- anova_raw[, 'Sum Sq', drop = FALSE]
     colnames(anova_dat) <- param
     out <- as_data_frame(anova_dat) %>% rownames_to_column('variable')
-    return(out)
+    return(list(table = out, fit = fit))
 }
 
 anova_list <- lapply(params, function(x) anova_param(anovadat, x, vars$variable))
+names(anova_list) <- params
 
-anova_dat <- Reduce((function(...) merge(..., by = 'variable')), anova_list) %>%
+anova_dat <- Reduce((function(...) merge(..., by = 'variable')), 
+                    lapply(anova_list, '[[', 'table')) %>%
     gather(parameter, value, -variable) %>%
     mutate(variable = factor(variable, rev(c(vars$variable, 'Residuals'))),
            parameter = factor(parameter, params)) %>%
@@ -338,11 +342,75 @@ anova_dat <- Reduce((function(...) merge(..., by = 'variable')), anova_list) %>%
 ggplot(anova_dat) + 
     aes(x = parameter, y = norm_value, fill = variable) + 
     geom_bar(stat = 'identity') + 
-    scale_fill_manual(values = c(vars$color, 'grey'))
+    scale_fill_manual(values = rev(c(vars$color, 'grey')))
     
 ```
 
-```{r traitsclimate, fig.cap = traitsclimate_cap}
+Related to the results above, the primary drivers of variability in PROSPECT traits are trait-dependent.
+
+The number of leaf mesophyll layers, brown matter content, and water thickness are dominated largely by among-species variability.
+Much of the among-species variability in the N parameter is explained by leaf type (broad vs. needle), with some additional contribution of shade tolerance.
+Leaf type is also important in explaining variability in leaf water content, as is plant growth form.
+However, large fractions of this variability are unexplained by any functional attribute, contributing to high residual species-level variability.
+
+Most of the variability in the remaining traits -- pigment and dry matter contents -- is within species, and the majority of that variability remains unexplained.
+
+For all traits, site is an important factor, accounting for approximately 25% of the variance on average.
+
+```{r pftcoefs, fig.cap = pftcoefs_cap, fig.width = 12, fig.height = 12}
+
+coeftab <- function(anova_list, param, variable) {
+    fit <- anova_list[[param]][['fit']]
+    sfit <- summary(fit)
+    fitnames <- names(fit$coefficients)
+    coef_inds <- grep(variable, fitnames)
+    coef_mean <- sfit$coefficients[coef_inds, 'Estimate']
+    coef_se <- sfit$coefficients[coef_inds, 'Std. Error'] 
+    coeftab <- tibble(parameter = param,
+                      variable = variable,
+                      varvalue = gsub(variable, '', fitnames[coef_inds]),
+                      coef_mean = coef_mean,
+                      coef_se = coef_se)
+    return(coeftab)
+}
+
+coef_list <- list()
+coef_vars <- c('leaf_type', 'phenology', 'growth_form',
+               'myco_asso', 'shade_tolerance')
+i <- 1
+for (v in coef_vars) {
+    for (p in params) {
+        coef_list[[i]] <- coeftab(anova_list, p, v)
+        i <- i + 1
+    }
+}
+coeftable <- bind_rows(coef_list) %>%
+    mutate(parameter = factor(parameter, params))
+
+ggplot(coeftable) + 
+    aes(x = varvalue, y = coef_mean, 
+        ymin = coef_mean - coef_se, ymax = coef_mean + coef_se) + 
+    geom_pointrange() + 
+    geom_hline(yintercept = 0, linetype = 'dashed', color = 'red') +
+    facet_grid(parameter ~ variable, scales = 'free')
+
+pftcoefs_cap <- paste('Linear model coefficients, +/- 1 standard error.', 
+                      'Baselines are as follows:', 
+                      'growth_form = graminoid,',
+                      'leaf_type = broad,',
+                      'myco_asso = AM,',
+                      'phenology = deciduous,',
+                      'shade_tolerance = intermediate')
+
+```
+
+Woody species (trees and shrubs) had higher N and lower Cm values than herbaceous species (grasses (zero) and herbs).
+Needleleaf species had higher N and lower pigment, brown, and dry matter contents than broadleaf species.
+Compared to species with arbuscular (AM, (zero)) mycorrhizal associations, species with ectomycorrhizal associations (EM/ECM) had significantly lower N and higher pigment, brown, and dry matter contents, while the reverse was true of species with erocoid (ERM) mycorrhizal associations.
+Evergreen species had higher pigment, brown matter, and dry matter contents and lower N than deciduous species.
+Strongly shade tolerant species had significantly higher N and lower pigment, brown matter, and dry matter contents than species with lower shade tolerance.
+ 
+```{r traitsclimate, fig.cap = traitsclimate_cap, fig.width = 12, fig.height = 12}
 
 traitsclimate_cap <- paste('Relationship of traits with climate')
 
@@ -363,22 +431,36 @@ plot(traitcli_plt)
 
 ```
 
-```{r traitsclimatesp, fig.cap = traitsclimatesp_cap}
+```{r traitsclimatesp, fig.cap = traitsclimatesp_cap, fig.width = 12, fig.height = 12}
 
-traitsclimatesp_cap <- paste('Relationship of traits with climate: Species means')
+traitsclimatesp_cap <- paste('Relationship of traits with climate: ', 
+                             'Species means.',
+                             'Blue line is a linear fit,',
+                             'red line is a quadratic fit.')
 traitcli_plt %+% 
     (traitcli_dat %>% 
      group_by(speciescode, parameter, climvar, climval) %>%
-     summarize(value = mean(value)))
+     summarize(value = mean(value))) %+%
+    stat_smooth(method = 'lm',
+                formula = y ~ x + I(x^2),
+                color = 'red', se = F)
 
 ```
 
-```{r traitsclimateres, fig.cap = traitsclimateres_cap}
+```{r traitsclimateres, fig.cap = traitsclimateres_cap, fig.width = 12, fig.height = 12}
 
 traitsclimateres_cap <- paste('Relationship of traits with climate:', 
-                              'Species mean residuals')
+                              'Normalized residuals from the species mean')
 traitcli_plt %+% 
     (traitcli_dat %>% 
      group_by(speciescode, parameter, climvar) %>%
-     mutate(value = value - mean(value, na.rm = TRUE)))
+     mutate(value_mean = mean(value, na.rm = TRUE),
+            value = (value - value_mean)/value_mean)) + 
+    coord_cartesian(ylim = c(-1, 1))
+
 ```
+
+Relationships between plant traits and climate occur primarily at the species level, with relatively flat relationships between climate and species mean residuals.
+Leaf water thickness and carotenoid, brown matter, and dry matter contents all have a negative relationship with precipitation, while the N parameter and chlorophyll contents have a positive relationship.
+All traits have weak positive relationships with temperature, except brown matter content, for which this relationship is strongly negative.
+

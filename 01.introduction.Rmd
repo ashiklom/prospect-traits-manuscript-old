@@ -4,3 +4,10 @@
 
 @roth_leaf_2016 use PCA on spectra to show that leaves 
 
+Research questions:
+* Methodological:
+    - How well can foliar traits be estimated from leaf spectra via PROSPECT inversion? 
+* Ecological:
+    - How do foliar traits covary with each other?
+    - What are the dominant sources of variability in foliar traits?
+    - How are traits related to plant functional attributes and climate?
