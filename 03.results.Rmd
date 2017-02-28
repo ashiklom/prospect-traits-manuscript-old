@@ -4,8 +4,6 @@
 
 ```{r densfig, fig.cap = sumstatfigcap}
 sumstatfigcap <- paste('Histograms of inversion results by model and parameter')
-params <- c('N', 'Cab', 'Car', 'Cbrown', 'Cw', 'Cm')
-npar <- length(params)
 rsub <- results %>% 
     filter(parameter %in% params) %>%
     select(samplecode, modelname, parameter, parametermean) %>%
@@ -29,65 +27,47 @@ NOTE: Not all inversions have finished running yet, and different models are in 
 In general, none of the distributions of the means look extreme, and for the most part, they all have the same general shape. 
 
 
-```{r modelagreement, fig.cap = modagreecap, fig.width = 10, fig.height = 7}
-modagreecap <- paste('Comparison of parameter estimates across PROSPECT versions.',
-                     'p4 = PROSPECT 4, p5 = PROSPECT 5, p5b = PROSPECT 5B.')
-modcodes <- c('PROSPECT 4' = 'p4', 'PROSPECT 5' = 'p5', 'PROSPECT 5B' = 'p5b')
-modagree_dat <- results %>%
-    collect(n = Inf) %>%
-    mutate(mod = modcodes[modelname]) %>%
-    unite(par_mod, parameter, mod) %>%
-    select(samplecode, par_mod, 
-           mu = parametermean, lo = parameterq025, hi = parameterq975) %>%
-    data.table::setDT(.) %>%
-    data.table::dcast(samplecode ~ par_mod, value.var = c('mu', 'lo', 'hi')) %>%
-    as_data_frame
-param_pairs <- sapply(params[params != 'Cbrown'],
-                      function(x) paste('mu', x, combn(modcodes, 2), sep = '_'))
-pairs_dim <- dim(param_pairs) / c(2,1)
-r2mat <- matrix(NA_real_, pairs_dim[1], pairs_dim[2])
-colnames(r2mat) <- colnames(param_pairs)
-rownames(r2mat) <- c('p4 vs. p5', 'p4 vs. p5b', 'p5 vs. p5b')
-slopemat <- r2mat
-intmat <- r2mat
-madeleg <- 0
-oldpar <- par(mfrow = pairs_dim, mar = c(4,4,1,1))
-for (i in seq(1, nrow(param_pairs), 2)) {
-    for (p in colnames(param_pairs)) {
-        ccols <- param_pairs[i:(i+1), p]
-        if (all(ccols %in% colnames(modagree_dat))) {
-            form <- paste(ccols, collapse = ' ~ ')
-            fit <- suppressMessages(lmodel2::lmodel2(form, data = modagree_dat))
-            int <- fit$regression.results[2, 'Intercept']
-            slope <- fit$regression.results[2, 'Slope']
-            r2 <- fit$rsquare
-            intmat[i - i %/% 2, p] <- int
-            slopemat[i - i %/% 2, p] <- slope
-            r2mat[i - i %/% 2, p] <- fit$rsquare
-            plot(formula(form), data = modagree_dat, pch = 20, col = 'grey50')
-            abline(0, 1, col = 'red', lty = 'dashed', lwd = 2)
-            abline(int, slope, col = 'blue', lwd = 2)
-            legend('bottomright', paste('R2 = ', signif(r2, 3)), bty = 'n')
-        } else {
-            frame()
-            if (!madeleg) {
-                madeleg <- 1
-                legend('center', c('1:1 line', 'MA regression'), 
-                       lty = c('dashed', 'solid'),
-                       lwd = 2, col = c('red', 'blue'))
-            }
-        }
-    }
-}
-```
-
-Agreement between models is strongly parameter dependent.
-The most consistent agreement was for the water (Cw) and dry matter content (Cm) parameters.
-Agreement between PROSPECT 4 and 5 was substantially better than agreement of either model with PROSPECT 5B.
-
 ```{r validation, fig.cap = valid_cap}
 
 valid_cap <- 'Comparison of spectral trait estimates with direct measurements'
+
+convert2si <- function(value, parameter) {
+    case_when(parameter %in% c('Cab', 'Car') ~ 
+                udunits2::ud.convert(value, 'ug cm-2', 'kg m-2'),
+              parameter %in% c('Cw', 'Cm') ~ 
+                udunits2::ud.convert(value, 'g cm-2', 'kg m-2'),
+              TRUE ~ NA_real_)
+}
+
+valid_plot <- valid_dat %>%
+    filter((parameter == 'Cab' & trait == 'leaf_chltot_per_area') |
+           (parameter == 'Car' & trait == 'leaf_cartot_per_area') |
+           (parameter == 'Cw' & trait == 'leaf_water_thickness') |
+           (parameter == 'Cm' & trait == 'leaf_mass_per_area'),
+       modelname == 'PROSPECT 5',
+       !(projectcode %in% c('foster_beetle', 'wu_brazil', 'nasa_hyspiri'))) %>%
+    mutate_at(vars(matches('parameter[[:alpha:]]+')),
+              convert2si, parameter = .$parameter) %>%
+    mutate(month = lubridate::month(collectiondate),
+           growing_season = between(month, 5, 9)) %>%
+    filter(!(parameter == 'Cab' & parametermean > 0.00125),
+           !(parameter == 'Cm' & parametermean > 0.25),
+           !(trait == 'leaf_water_thickness' & traitvalue > 1)) %>%
+    ggplot(aes(x = parametermean, 
+               xmin = parametermean - parametersd,
+               xmax = parametermean + parametersd,
+               y = traitvalue)) + 
+        facet_wrap(~parameter + trait, scales = 'free') +
+        geom_errorbarh(color = 'grey', alpha = 0.25, size = 0.5) +
+        geom_point(aes(color = projectcode), size = 0.8, alpha = 0.5, stroke = 0) + 
+        scale_fill_brewer(palette = 'Dark2') +
+        geom_abline(linetype = 'dashed') + 
+        theme_bw() +
+        guides(color = guide_legend(override.aes = list(size = 4, 
+                                                        alpha = 1, 
+                                                        pch = 15))) +
+        labs(x = 'PROSPECT 5B estimate',
+             y = 'Measured value')
 
 traits <- tbl(specdb, 'trait_data') %>%
     collect(n = Inf) %>%
