@@ -6,4 +6,8 @@ LMA trends in evergreen leaves; e.g. shade tolerance [@lusk_why_2008].
 
 Importance of intraspecific variability in ecology, and how to study it [@violle_return_2012].
 
+@asner_amazonian_2014 -- Very similar to this study. Lots of points of comparison. Look for ways to replicate analyses.
+
+@asner_functional_2014 -- Also very similar. Look at his GLM approach.
+
 # References
