@@ -1,5 +1,6 @@
 _book
 _bookdown_files
+_main.Rmd
 results.db
 results.sql
 leaf_spectra.db
