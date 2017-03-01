@@ -4,7 +4,7 @@
 
 ```{r densfig, fig.cap = sumstatfigcap}
 sumstatfigcap <- paste('Histograms of inversion results by model and parameter')
-rsub <- results %>% 
+rsub <- results_all %>% 
     filter(parameter %in% params) %>%
     select(samplecode, modelname, parameter, parametermean) %>%
     collect(n = Inf) %>%
@@ -29,145 +29,57 @@ In general, none of the distributions of the means look extreme, and for the mos
 
 ```{r validation, fig.cap = valid_cap}
 
-valid_cap <- 'Comparison of spectral trait estimates with direct measurements'
+valid_cap <- paste('Comparison of spectral trait estimates with',
+                   'direct measurements. ')
 
-convert2si <- function(value, parameter) {
-    case_when(parameter %in% c('Cab', 'Car') ~ 
-                udunits2::ud.convert(value, 'ug cm-2', 'kg m-2'),
-              parameter %in% c('Cw', 'Cm') ~ 
-                udunits2::ud.convert(value, 'g cm-2', 'kg m-2'),
-              TRUE ~ NA_real_)
-}
+ggplot(valid_dat %>% 
+       # Plot only the best-fitting 90% of data
+       group_by(parameter) %>%
+       mutate(asr = abs(scaledresid),
+              good = asr < quantile(asr, 0.9)) %>%
+       filter(good)) +
+    aes(x = parametermean, 
+        xmin = parametermean - parametersd, 
+        xmax = parametermean + parametersd,
+        y = traitvalue, 
+        color = projectcode) +
+    facet_wrap(~ leaf_type + parameter, scales = 'free', dir = 'h', ncol = 4) +
+    geom_errorbarh(color = 'grey', alpha = 0.4) + 
+    geom_point(alpha = 0.5, size = 0.5)  + 
+    geom_smooth(method = 'lm', se = FALSE) + 
+    geom_abline(linetype = 'dashed') + 
+    scale_color_brewer(palette = 'Dark2')
 
-valid_plot <- valid_dat %>%
-    filter((parameter == 'Cab' & trait == 'leaf_chltot_per_area') |
-           (parameter == 'Car' & trait == 'leaf_cartot_per_area') |
-           (parameter == 'Cw' & trait == 'leaf_water_thickness') |
-           (parameter == 'Cm' & trait == 'leaf_mass_per_area'),
-       modelname == 'PROSPECT 5',
-       !(projectcode %in% c('foster_beetle', 'wu_brazil', 'nasa_hyspiri'))) %>%
-    mutate_at(vars(matches('parameter[[:alpha:]]+')),
-              convert2si, parameter = .$parameter) %>%
-    mutate(month = lubridate::month(collectiondate),
-           growing_season = between(month, 5, 9)) %>%
-    filter(!(parameter == 'Cab' & parametermean > 0.00125),
-           !(parameter == 'Cm' & parametermean > 0.25),
-           !(trait == 'leaf_water_thickness' & traitvalue > 1)) %>%
-    ggplot(aes(x = parametermean, 
-               xmin = parametermean - parametersd,
-               xmax = parametermean + parametersd,
-               y = traitvalue)) + 
-        facet_wrap(~parameter + trait, scales = 'free') +
-        geom_errorbarh(color = 'grey', alpha = 0.25, size = 0.5) +
-        geom_point(aes(color = projectcode), size = 0.8, alpha = 0.5, stroke = 0) + 
-        scale_fill_brewer(palette = 'Dark2') +
-        geom_abline(linetype = 'dashed') + 
-        theme_bw() +
-        guides(color = guide_legend(override.aes = list(size = 4, 
-                                                        alpha = 1, 
-                                                        pch = 15))) +
-        labs(x = 'PROSPECT 5B estimate',
-             y = 'Measured value')
+# For shading the middle region of the histograms
+dummy <- tribble(
+    ~xx, ~region,
+    -0.1, 0,
+    0.1, 0,
+    -0.25, 1,
+    0.25, 1,
+    -0.5, 2,
+    0.5, 2,
+    -1, 3,
+    1, 3)
 
-traits <- tbl(specdb, 'trait_data') %>%
-    collect(n = Inf) %>%
-    mutate(trait = recode(trait, `leaf_mass_per_per_area` = 'leaf_mass_per_area')) %>%
-    group_by(samplecode, trait) %>%
-    summarize(traitvalue = mean(traitvalue)) %>%
-    ungroup() %>%
-    right_join(tbl(specdb, 'samples') %>% collect(n = Inf)) %>%
-    spread(trait, traitvalue) %>%
-    inner_join(modagree_dat) %>%
-    mutate_at(vars(matches('Ca(b|r)')),
-              funs('SI' = udunits2::ud.convert(., 'ug cm-2', 'kg m-2'))) %>%
-    mutate_at(vars(matches('C(w|m)')),
-              funs('SI' = udunits2::ud.convert(., 'g cm-2', 'kg m-2')))
-
-valid_plot <- function(measure, estimate, modcodes, data, ...) {
-    ny <- length(modcodes)
-    oldpar <- par(mfrow = c(1, ny), mar = c(3, 3, 2, 1), oma = c(2, 2, 2, 0))
-    for (i in seq_along(modcodes)) {
-        estmu <- paste('mu', estimate, modcodes[i], 'SI', sep = '_')
-        esthi <- paste('hi', estimate, modcodes[i], 'SI', sep = '_')
-        estlo <- paste('lo', estimate, modcodes[i], 'SI', sep = '_')
-        form <- formula(paste(measure, estmu, sep = ' ~ '))
-        fit <- lm(form, data = data)
-        r2 <- summary(fit)$r.squared
-        plot(form, data = data, main = names(modcodes)[i], type = 'n')
-        segments(y0 = data[[estmu]], x0 = data[[estlo]], x1 = data[[esthi]], col = 'grey80')
-        points(form, data = data, pch = 19, col = 'grey50')
-        abline(0, 1, col = 'red', lty = 'dashed', lwd = 2)
-        abline(fit, col = 'blue', lty = 'solid', lwd = 2)
-        legend('bottomright', paste('R2 = ', signif(r2, 3)), bty = 'n')
-    }
-    mtext('PROSPECT inversion estimate', side = 1, outer = TRUE)
-    mtext('Observed', side = 2, outer = TRUE)
-    mtext(paste(estimate, 'validated against', measure), side = 3, outer = TRUE)
-}
-    
-valid_plot('leaf_chltot_per_area', 'Cab', modcodes, traits)
-valid_plot('leaf_cartot_per_area', 'Car', modcodes[-1], traits)
-valid_plot('leaf_water_thickness', 'Cw', modcodes, 
-           filter(traits, leaf_water_thickness < 1))
-valid_plot('leaf_mass_per_area', 'Cm', modcodes, traits)
-```
-
-Overall, PROSPECT 5B had the best inversion accuracy, with the highest R2 values for all parameters except dry matter content ("Cm").
-By parameter, the best inversion accuracy was achieved for leaf water content ("Cw"), with all remaining parameters having roughly comparable, poor inversion accuracy.
-
-```{r validationggplot, fig.cap = valid_ggplot_cap}
-
-valid_ggplot_cap <- paste('Comparison of spectral trait estimates with direct', 
-                          'measurements, by project and species attributes')
-
-mod <- 'p5b'
-
-gg_valid <- tbl(specdb, 'species') %>%
-    inner_join(tbl(specdb, 'species_attributes')) %>%
-    collect(n = Inf) %>%
-    right_join(traits) %>%
-    mutate(lg = paste(leaf_type, growth_form))
-
-valid_vec <- c('Cab' = 'leaf_chltot_per_area',
-               'Car' = 'leaf_cartot_per_area',
-               'Cw' = 'leaf_water_thickness',
-               'Cm' = 'leaf_mass_per_area')
-
-valid_ggplot <- function(measure, estimate, data, ...) {
-    estmu <- paste('mu', estimate, mod, 'SI', sep = '_')
-    estlo <- paste('lo', estimate, mod, 'SI', sep = '_')
-    esthi <- paste('hi', estimate, mod, 'SI', sep = '_')
-    indat <- filter_(data, .dots = sprintf('!is.na(%s)', 
-                                           c(measure, estmu, estlo, esthi)))
-    xrange <- c(0, max(indat[[estmu]]))
-    yrange <- c(0, max(indat[[measure]]))
-    ggplot(indat) + 
-        aes_string(x = estmu, y = measure, xmin = estlo, xmax = esthi, ...) + 
-        geom_errorbarh(alpha = 0.15, size = 0.5) +
-        geom_point(alpha = 0.5, size = 1, shape = 21, color = 'black') + 
-        geom_smooth(method = 'lm', se = FALSE) + 
-        geom_abline(intercept = 0, slope = 1, linetype = 'dashed') + 
-        scale_color_brewer(palette = 'Dark2') + 
-        scale_fill_brewer(palette = 'Dark2') +
-        coord_cartesian(xlim = xrange, ylim = yrange)
-}
-
-for (i in seq_along(valid_vec)) {
-    v <- valid_vec[i]
-    nv <- names(valid_vec)[i]
-    dat <- gg_valid
-    if (v == 'leaf_water_thickness') {
-        dat <- filter(dat, leaf_water_thickness < 1)
-    }
-    plot(valid_ggplot(v, nv, dat, color = 'projectcode', fill = 'projectcode'))
-    plot(valid_ggplot(v, nv, dat, color = 'leaf_type', fill = 'leaf_type'))
-    plot(valid_ggplot(v, nv, dat, color = 'growth_form', fill = 'growth_form'))
-    plot(valid_ggplot(v, nv, dat, color = 'lg', fill = 'lg'))
-}
+ggplot(valid_dat) +
+    aes(x = scaledresid, y = ..ncount.., color = projectcode) + 
+    geom_area(data = dummy, 
+                aes(x = xx, y = 1, fill = region, group = region),
+                alpha = 0.2,
+                inherit.aes = FALSE) + 
+    geom_freqpoly(size = 2) +
+    geom_vline(xintercept = 0, linetype = 'dashed', color = 'black', size = 1.25) +
+    facet_grid(leaf_type ~ parameter, scales = 'free_x') + 
+    scale_color_brewer(palette = 'Dark2') + 
+    guides(fill = FALSE)
 
 ```
 
-```{r variancecompare, fig.cap=vccap}
+There is an additive conifer bias. 
+Beyond that, there seem to be issues with the Yang phenology and Wu Brazil datasets.
+
+```{r variancecompare, fig.cap=vccap, eval = FALSE}
 
 vccap <- 'Comparison of variance between spectral estimates and direct measurements.'
 
@@ -196,7 +108,7 @@ In all cases, the measured values had a higher variance than estimates from spec
 The largest difference in variance between measured values and spectral estimates was for carotenoid and dry matter contents, while variance was closest for chlorophyll content.
 It should be noted that this comparison only applies to spectral values which have associated trait measurements -- i.e. the actual variance for all traits estimated from spectra may be considerably different.
 
-```{r covariancecompare, fig.cap = cvccap}
+```{r covariancecompare, fig.cap = cvccap, eval = FALSE}
 
 cvccap <- paste('Comparison of covariance between spectral estimates ', 
                 'and direct measurements')
@@ -228,7 +140,7 @@ They may change if I revise the model used to estimate spectra._
 
 ### Correlations among PROSPECT traits
 
-```{r pcaall, fig.cap = pcaall_cap}
+```{r pcaall, fig.cap = pcaall_cap, eval = FALSE}
 
 pcaall_cap <- paste('Principal component analysis on all PROSPECT traits')
 
@@ -249,7 +161,7 @@ draw_pca(pcaall_dat, '.')
 
 ```
 
-```{r pcasp, fig.cap = pcasp_cap}
+```{r pcasp, fig.cap = pcasp_cap, eval = FALSE}
 
 pcasp_cap <- paste('Principal components analysis on species means.')
 pcasp_dat <- pcaall_dat %>%
@@ -259,7 +171,7 @@ draw_pca(pcasp_dat, 'x')
 
 ```
 
-```{r pcares, fig.cap = pcares_cap}
+```{r pcares, fig.cap = pcares_cap, eval = FALSE}
 
 pcares_cap <- paste('Principal components analysis on residuals',
                     'from species means')
@@ -277,7 +189,7 @@ Within species, the primary axis of variability is **???**
 
 ### Drivers of variability in PROSPECT traits
 
-```{r anovaplot, fig.cap = anovaplot_cap, fig.width = 10, fig.height = 10}
+```{r anovaplot, fig.cap = anovaplot_cap, fig.width = 10, fig.height = 10, eval = FALSE}
 
 anovaplot_cap <- paste('Partitioning variability in PROSPECT traits')
 
@@ -337,7 +249,7 @@ Most of the variability in the remaining traits -- pigment and dry matter conten
 
 For all traits, site is an important factor, accounting for approximately 25% of the variance on average.
 
-```{r pftcoefs, fig.cap = pftcoefs_cap, fig.width = 12, fig.height = 12}
+```{r pftcoefs, fig.cap = pftcoefs_cap, fig.width = 12, fig.height = 12, eval = FALSE}
 
 coeftab <- function(anova_list, param, variable) {
     fit <- anova_list[[param]][['fit']]
@@ -390,7 +302,7 @@ Compared to species with arbuscular (AM, (zero)) mycorrhizal associations, speci
 Evergreen species had higher pigment, brown matter, and dry matter contents and lower N than deciduous species.
 Strongly shade tolerant species had significantly higher N and lower pigment, brown matter, and dry matter contents than species with lower shade tolerance.
  
-```{r traitsclimate, fig.cap = traitsclimate_cap, fig.width = 12, fig.height = 12}
+```{r traitsclimate, fig.cap = traitsclimate_cap, fig.width = 12, fig.height = 12, eval = FALSE}
 
 traitsclimate_cap <- paste('Relationship of traits with climate')
 
@@ -411,7 +323,7 @@ plot(traitcli_plt)
 
 ```
 
-```{r traitsclimatesp, fig.cap = traitsclimatesp_cap, fig.width = 12, fig.height = 12}
+```{r traitsclimatesp, fig.cap = traitsclimatesp_cap, fig.width = 12, fig.height = 12, eval = FALSE}
 
 traitsclimatesp_cap <- paste('Relationship of traits with climate: ', 
                              'Species means.',
@@ -427,7 +339,7 @@ traitcli_plt %+%
 
 ```
 
-```{r traitsclimateres, fig.cap = traitsclimateres_cap, fig.width = 12, fig.height = 12}
+```{r traitsclimateres, fig.cap = traitsclimateres_cap, fig.width = 12, fig.height = 12, eval = FALSE}
 
 traitsclimateres_cap <- paste('Relationship of traits with climate:', 
                               'Normalized residuals from the species mean')
