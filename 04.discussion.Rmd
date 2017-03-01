@@ -1,5 +1,18 @@
 # Discussion
 
+## Methods
+
+@colombo_estimation_2008 also performed PROSPECT inversion to estimate leaf water and dry matter contents.
+They were able to estimate EWT with no prior information, but that simultaneous estimation of EWT and LDMC was more challenging.
+
+Leaf water content tends to confound the extraction of other leaf constituents, particularly dry matter content [@kokaly_spectroscopic_1999]. 
+This may help explain the large uncertainties in our estimates of dry matter content.
+
+The relationship between leaf dry matter content (for which we had no direct measurements in this study) and leaf mass per area is unclear.
+Some studies have assumed that the two traits are comparable [e.g. @cheng_deriving_2014], but other studies that have explored the correlations explicitly found that is not necessarily the case (**REFS**).
+
+## Ecology
+
 Genetic basis behind leaf economic spectrum [@donovan_evolution_2011].
 
 LMA trends in evergreen leaves; e.g. shade tolerance [@lusk_why_2008].
@@ -9,5 +22,29 @@ Importance of intraspecific variability in ecology, and how to study it [@violle
 @asner_amazonian_2014 -- Very similar to this study. Lots of points of comparison. Look for ways to replicate analyses.
 
 @asner_functional_2014 -- Also very similar. Look at his GLM approach.
+
+@roth_leaf_2016 -- Three different principal components of spectral variability.
+PC1 correlates best with leaf structure and surface scattering.
+PC2 correlates best with lignin, water, and LMA.
+PC3 correlates with surface scattering and pigments.
+
+
+
+
+## Other notes
+
+Although the _N_ parameter is supposed to represent the effective number of leaf mesophyll layers (or 1 more than the number of leaf intracellular air spaces), its global modulation of reflectance may mean it is also influenced by spectrally invariant specular reflectance off the leaf surface.
+
+The composition of the leaf surface, such as cutin and wax, may also be related to the leaf dry matter content absorption coefficient [@da_luz_attenuated_2006].
+
+Early efforts to extent the PROSPECT model to additional compounds like lignin, cellulose, and protein [e.g. @jacquemoud_estimating_1996; @fourty_leaf_1996] have been largely abandoned by the community in favor of empirical approaches like PLSR, wavelets, etc.
+However, we suggest that such efforts be revisited.
+
+Moving from the leaf to the canopy scale is challenging.
+Wavelengths of most importance for estimating traits (e.g. pigments, @yoder_predicting_1995) may be different at the leaf and canopy scales due to confounding influences of structural variables.
+This is why it is important to use and enhance radiative transfer models.
+
+However, remote retrievals using inversion of coupled leaf and canopy radiative transfer models are promising [@jacquemoud_inversion_1993; @jacquemoud_extraction_1995].
+
 
 # References

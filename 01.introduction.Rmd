@@ -4,6 +4,11 @@ Vegetation is a critical component of the biosphere that mediates climate, modif
 Unfortunately, current predictions about the future of the terrestrial biosphere are highly uncertain, as evidenced by the huge disparities in model projections of the magnitude and direction of the land carbon sink [@friedlingstein_uncertainties_2014] .
 Most ecosystem models currently represent plants as belonging to discrete “functional types” with fixed parameters, but approaches based on continuously varying plant traits more effectively capture gradual adaptation of ecosystems to environmental change [@van_bodegom_going_2012]. 
 
+Plant functional diversity is inextricably linked to ecosystem functioning [@reichstein_linking_2014].
+
+Better understanding of the drivers of trait variability will also be useful for imputation of missing data in trait databases [@taugourdeau_filling_2014].
+This imputation also provides an excellent mechanism for testing theories of functional variability, as the imputation is effectively a phylogenetic forecast.
+
 Recent syntheses of large trait databases (such as TRY, @kattge_try_2011) have contributed immensely to our understanding of drivers of global plant trait variability at evolutionary time scales. 
 For example, strong negative covariance at the global scale between foliar traits favoring rapid growth (e.g., nutrient concentrations, photosynthetic rate) and traits related to recalcitrance (e.g., mass per area, longevity) has been suggested to be an indicator of an evolutionary strategic trade-off between acquisitive and conservative plant strategies, termed the "leaf economic spectrum" [@wright_worldwide_2004; @reich_world-wide_2014; @diaz_global_2016].
 The relative position of plants along this axis is related to climate and edaphic variables [@ordonez_global_2009]. **(MORE HERE).**
@@ -23,32 +28,45 @@ Similarly, although enhanced nutrient availability should promote increased *TRA
 
 In addition, leaf economic traits do not capture all aspects of plant function; for instance, @li_leaf_2015 found that they are decoupled from plant hydraulic traits. (**More examples**).
 
-Understanding plant functional variability requires trait measurements at many different scales.
-Capturing acclimatory ecophysiological responses further requires repeat measurements of traits on the same individual and probably even the same organ.
+Understanding plant functional variability requires trait measurements at many different scales, and capturing acclimatory ecophysiological responses further requires repeat measurements of traits on the same individual and probably even the same organ.
 Traditional approaches to trait measurement are very labor intensive, precluding the former, and are almost always destructive, precluding the latter.
 By comparison, spectral measurements are considerably easier and faster to collect, and are non-destructive, allowing repeat sampling over the course of a season or experimental manipulation.
+Hyperspectral reflectance measurements in particular also have more information content than direct trait measurements, with a single observation capable of providing information about multiple traits [@roth_leaf_2016].
+Optical functional types (**Ustin & Gamon 2010**)
 Spectral measurements have been successfully used to investigate:
 
+    * Leaf reflectance is related to plant stress [@carter_responses_1993; @penuelas_reflectance_1994; @penuelas_reflectance_1993]
     * @serbin_leaf_2011 -- Sensitivity to temperature (PLSR)
     * @serbin_spectroscopic_2014 -- Trait estimation (PLSR)
     * @asner_amazonian_2014 -- Investigate the drivers of functional diversity (very similar to what I'm trying to do, only limited to the Amazon, and using PLSR)
+    * Refer to review by @penuelas_visible_1998
 
 Moreover, spectral measurements also provide a link to remote sensing, which creates the potential for trait inference at the landscape and regional scale over long time scales [@asner_large-scale_2016].
-Understanding trait variability at the plot scale is also important to determining the potential of using satellite remote sensing, which is fundamentally limited by spatial resolution to at least the plot scale and above, to study traits.
+Understanding spectral and functional variability at the plot scale is also important to determining the potential of using satellite remote sensing, which is fundamentally limited by spatial resolution to at least the plot scale and above, to study traits.
+The vast increase in spatial scale and continuity afforded by remote measurement of plant traits will also be very helpful in overcoming current sampling biases in trait databases [e.g. @sandel_estimating_2015].
 
-The typical approaches to estimating traits from spectra are based on empirical calibrations of spectra with direct measurements of leaf traits, through the use of vegetation indices [@sims_relationships_2002] (**MORE REFS**), wavelet analyses (**REFS; see PROSPECT paper**), or partial least squares regression [@serbin_leaf_2011; @serbin_spectroscopic_2014; @asner_amazonian_2014; @asner_functional_2014; @chavana-bryant_leaf_2016].
+The typical approaches to estimating traits from spectra are based on empirical calibrations of spectra with direct measurements of leaf traits, through the use of
+spectral indices [@sims_relationships_2002; @feret_optimizing_2011; @colombo_estimation_2008; @stimson_spectral_2005; @penuelas_reflectance_1993; @penuelas_reflectance_1994; @maki_estimation_2004; @datt_remote_1998; @danson_estimating_2004], 
+wavelet transforms [@cheng_spectroscopic_2011; @cheng_deriving_2014; @blackburn_retrieval_2008; @rivard_continuous_2008; @bruce_wavelets_2001], 
+clustering algorithms (e.g. random forest, @clark_species-level_2012), 
+or partial least squares regression [@serbin_leaf_2011; @serbin_spectroscopic_2014; @asner_amazonian_2014; @asner_functional_2014; @chavana-bryant_leaf_2016].
 In this study, however, we estimate traits from spectra using Bayesian inversion of the PROSPECT 5 model [@jacquemoud_prospect_1990; @feret_prospect-4_2008] described in @shiklomanov_quantifying_2016.
-This approach has two distinct advantages.
+This approach has three important advantages.
 First, because it is underpinned by a mechanistic model, it is likely to be more general than empirical approaches relying on site-specific calibrations.
+An early critique of empirical approaches is @grossman_critique_1996, who showed that, for example, absorption coefficients selected by multiple regression are primarily a statistical artifact.
 Second, the Bayesian aspect allows for the estimation of uncertainty in leaf traits due to errors in the observation or model.
+Notably, Bayesian radiative transfer model inversion is compatible with data in a wide variety of formats, spectral resolutions, and transformations because the modeled spectra can always be transformed to match the observations [e.g., spectral resolution in @shiklomanov_quantifying_2016].
+This flexibility is particularly important to studies like this one, where data are taken from multiple projects and instruments.
+Third, the use of radiative transfer models is important to understanding the underlying physical mechanisms underlying variability in foliar optical properties.
+In particular, complex multivariate regression analyses such as PLSR select wavelengths based entirely on model accuracy rather than physical meaning of the underlying coefficients (though diligent studies check that these variable selection techniques align with known absorption features; e.g. @serbin_spectroscopic_2014).
 
 The PROSPECT 5B model predicts leaf reflectance and transmittance as a function of the effective number of leaf mesophyll layers, chlorophyll and carotenoid concentrations, **Cbrown**, water content, and dry matter content [@feret_prospect-4_2008], collectively referred to henceforth as "leaf optical traits".
 Leaf mesophyll number is important because...
-Chlorophyll concentrations control light absorption and photosynthetic potential (**Richardson et al. 2002**).
+Chlorophyll concentrations control light absorption and photosynthetic potential (**Richardson et al. 2002**), and, as the most nitrogen-rich component of leaves, provide a useful indication of leaf nitrogen (and general nutrition) status [@moran_differentiation_2000].
 Carotenoid pigments in this context encompass many different pigments related to the xanthophyll cycle. They are related to photochemical stress 
 [@magney_assessing_2014] (** See references in Magney**) **and other stuff**.
 Brown matter concentrations are **???**.
-Leaf water content is related to drought stress and mortality probability [@asner_progressive_2016] (**REFS THEREIN**).
+Leaf water content is related to drought stress [@carter_responses_1993; @asner_progressive_2016; @penuelas_reflectance_1993; @penuelas_reflectance_1994] (**Refs in Asner 2016**), nutrient stress (**REFS**), and insect damage [@cheng_continuous_2010] and is a key variable for assessing susceptibility of ecosystems to fire [@agee_foliar_2002].
 Leaf dry matter content is **???**.
 In addition to exploring these optical traits, we also examine their relationship with to leaf nitrogen per unit mass, related to carboxylation efficiency and which are an important indicator of nutrient stress (**Field & Mooney 1986**), and leaf mass per area (LMA), an indicator of plant strategy with regard to carbon allocation and light availability [@poorter_causes_2009].
 
@@ -58,11 +76,22 @@ This study is driven by the following research questions:
     2. How are leaf optical traits related to other leaf foliar traits?
     3. What are the biotic and abiotic drivers of variability in leaf optical traits? 
 
+Although the plant ecology tends to focus on interspecific variability, intraspecific variability is also important [@albert_intraspecific_2010; @albert_multi-trait_2010; @albert_when_2011].
 
-*Papers worth reading, because they're similar, or otherwise relevant to the analyses*
 
-    * @roth_leaf_2016 use PCA on spectra to show that leaves
+*Papers to read, because they're similar, or otherwise relevant to the analyses*
+
     * @asner_amazonian_2014 -- GLMs on traits
     * @asner_functional_2014 -- another Asner leaf spectra paper
     * @chavana-bryant_leaf_2016 -- PLSR on traits in the tropics
+    * @wu_convergence_2016 -- I site them here
+    * @grime_evidence_1977 -- Prominent ecological theory of trait variability
+    * @sandel_multidimensional_2016 -- Good introduction text to traits (and look through refs therein)
+    * Other windows still open in Chrome...
+
+*More questions / ideas*
+    
+    * How well does PROSPECT inversion capture each level of variability?
+        - Perform validations on aggregated averages by species, and maybe functional type, site, attributes, etc.
+        - Possibly investigate not just absolute trait values, but residuals from above means
 

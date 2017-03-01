@@ -38,8 +38,8 @@ Bayesian inversion of PROSPECT [@shiklomanov_quantifying_2016].
 
 ## Statistical analysis
 
-PCA on residuals, following @roth_leaf_2016 .
 
-TODO:
-    * Calculate some 'T-statistics', following @violle_return_2012 ?
+Ideas:
+    * Calculate some 'T-statistics', as in @violle_return_2012 ?
+    * 
 
