@@ -41,15 +41,20 @@ results_all <- src_sqlite('results.db') %>%
     left_join(tbl(specdb, 'species_attributes') %>% collect(n = Inf)) %>%
     left_join(tbl(specdb, 'plots') %>% collect(n = Inf)) %>%
     left_join(tbl(specdb, 'sites') %>% collect(n = Inf)) %>%
+    verify(is_unique(samplecode, modelname, parameter)) %>%
     mutate(modelname = factor(modelname, models),
            parameter = factor(parameter, c(params, 'deviance', 'neff', 'residual')),
            collectiondate = parse_date(collectiondate),
            leaf_type = if_else(projectcode == 'wu_brazil', 'broad', leaf_type))
 
-traits <- results_all %>%
+traits_all <- results_all %>%
     inner_join(tbl(specdb, 'trait_data') %>% 
                filter(samplecode != 'nasa_fft|PB02_ABBA_TN|2008') %>%
                collect(n = Inf))
+
+# Filter down to PROSPECT 5B, which will be used from now on
+results <- filter(results_all %>% filter(modelname == 'PROSPECT 5B'))
+traits <- filter(traits_all %>% filter(modelname == 'PROSPECT 5B'))
 
 convert2si <- function(value, parameter) {
     case_when(parameter %in% c('Cab', 'Car') ~ 
@@ -63,13 +68,11 @@ valid_dat <- traits %>%
     filter((parameter == 'Cab' & trait == 'leaf_chltot_per_area') |
            (parameter == 'Car' & trait == 'leaf_cartot_per_area') |
            (parameter == 'Cw' & trait == 'leaf_water_thickness') |
-           (parameter == 'Cm' & trait == 'leaf_mass_per_area'),
-       modelname == 'PROSPECT 5B') %>%
+           (parameter == 'Cm' & trait == 'leaf_mass_per_area')) %>%
     mutate_at(vars(matches('parameter[[:alpha:]]+')),
               convert2si, parameter = .$parameter) %>%
     group_by(parameter) %>%
     mutate(month = lubridate::month(collectiondate),
-           growing_season = between(month, 5, 9),
            resid = parametermean - traitvalue,
            normresid = resid / traitvalue,
            scaledresid = resid / mean(traitvalue)) %>%
