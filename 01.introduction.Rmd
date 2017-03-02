@@ -4,15 +4,33 @@ Vegetation is a critical component of the biosphere that mediates climate, modif
 Unfortunately, current predictions about the future of the terrestrial biosphere are highly uncertain, as evidenced by the huge disparities in model projections of the magnitude and direction of the land carbon sink [@friedlingstein_uncertainties_2014] .
 Most ecosystem models currently represent plants as belonging to discrete “functional types” with fixed parameters, but approaches based on continuously varying plant traits more effectively capture gradual adaptation of ecosystems to environmental change [@van_bodegom_going_2012]. 
 
+
 Plant functional diversity is inextricably linked to ecosystem functioning [@reichstein_linking_2014].
+
+Relationship of functional diversity to overall productivity is complex, with increased productivity with increasing biodiversity in many cases (**refs in Hooper**) but evidence suggesting such increases are limited to certain species combinations [@hooper_overyielding_2004; probably @hooper_effects_2005].
+
+Plant functional traits modulate species responses to environmental gradients [@pollock_role_2012; **others**].
+
+
+Studies using traits to model community composition:
+
+* @jamil_selecting_2013 -- species means, GLMM 
+* Shipley's MaxEnt model [@shipley_plant_2006; @laughlin_climatic_2011]
+* Laughlin's hierarchical model [@laughlin_predictive_2012]
+* Community-weighted means, custom "CATS" model [@frenette-dussault_trait-based_2013]
 
 Better understanding of the drivers of trait variability will also be useful for imputation of missing data in trait databases [@taugourdeau_filling_2014].
 This imputation also provides an excellent mechanism for testing theories of functional variability, as the imputation is effectively a phylogenetic forecast.
 
+Understanding the structure and inherent dimensionality of the plant functional trait space is important to identifying the marginal information content of multiple trait observations, which is critical to maximizing the utility of costly trait collection efforts and for predicting species distributions [@laughlin_intrinsic_2014; @bernhardt-romermann_identification_2008; @shiklomanov_scaling_????].
+
+Leaf traits are consistently among the most important traits for predicting community composition [@laughlin_intrinsic_2014].
+
 Recent syntheses of large trait databases (such as TRY, @kattge_try_2011) have contributed immensely to our understanding of drivers of global plant trait variability at evolutionary time scales. 
 For example, strong negative covariance at the global scale between foliar traits favoring rapid growth (e.g., nutrient concentrations, photosynthetic rate) and traits related to recalcitrance (e.g., mass per area, longevity) has been suggested to be an indicator of an evolutionary strategic trade-off between acquisitive and conservative plant strategies, termed the "leaf economic spectrum" [@wright_worldwide_2004; @reich_world-wide_2014; @diaz_global_2016].
 The relative position of plants along this axis is related to climate and edaphic variables [@ordonez_global_2009]. **(MORE HERE).**
-    * *How do traits vary with climate and soil? Use as counterexample later.*
+
+* *How do traits vary with climate and soil? Use as counterexample later.*
 
 Identification of coordinated relationships of plant functional traits with environmental conditions is appealing for ecological inference and modelling because it greatly facilitates the representation of functional response to environmental change. (**Can be said better**)
 However, plant economic relationships often do not hold at smaller scales.
@@ -23,23 +41,31 @@ The same is true of studies of trait variability across environmental gradients.
 For instance, although globally, *TRAIT X DECLINES/INCREASES* with temperature, local-scale studies along elevation gradients observed the opposite (**REF**). 
 Similarly, although enhanced nutrient availability should promote increased *TRAIT X*, greenhouse studies precisely controlling soil nutrient levels observed *TRAIT X INCREASES/DECLINES* with increased N availability (**REF**).
 
-*Possible extra references*:
-    * @zajec_limestone_2016 show effects of limestone dust deposition on leaf optical properties and traits.
+The same traits have been found to be primarily influenced by different environmental filters in different studies. 
+For instance, many studies in grasslands [e.g. @kleyer_assessing_2012 **and refs therein**; @louault_plant_2005] found that C:N ratio and canopy height are strongly modulated by grazing intensity more than soil nutrient content (though they say the phosphorus thing is due to "site peculiarities", namely defecating animals), but **Westoby et al. (1996)** and **Grime et al. (1997)** (**What biomes??**) found the opposite, whereby leaf C:N ratio and height were more closely linked to soil nutrients than disturbance intensity.
 
-In addition, leaf economic traits do not capture all aspects of plant function; for instance, @li_leaf_2015 found that they are decoupled from plant hydraulic traits. (**More examples**).
+Limiting similarity tends towards trait divergence at smaller scales [@clark_individual-scale_2011; @kraft_functional_2008; **refs therein; need a classic paper here**].
+
+In addition, leaf economic traits do not capture all aspects of plant function; for instance, @li_leaf_2015 found that they are decoupled from plant hydraulic traits. 
+@westoby_leaf-height-seed_1998 strategy has three axes, of which only one is related to the leaf economic spectrum [@laughlin_multi-trait_2010].
+(**More examples**). 
 
 Understanding plant functional variability requires trait measurements at many different scales, and capturing acclimatory ecophysiological responses further requires repeat measurements of traits on the same individual and probably even the same organ.
-Traditional approaches to trait measurement are very labor intensive, precluding the former, and are almost always destructive, precluding the latter.
+Species or higher level aggregation is problematic for inference; for instance, interspecific differences actually reflect responses of individuals to different environments, not actual species-level functional differences ("Species do not compete, individuals do. Species do not respond to climate, individuals respond to weather.") [@clark_individual-scale_2011]. 
+These goals are difficult to achieve using traditional approaches to trait measurement because they are very labor intensive, limiting sample sizes required for robust inference, and are almost always destructive, precluding repeat sampling for tracking developmental and acclimatory responses.
 By comparison, spectral measurements are considerably easier and faster to collect, and are non-destructive, allowing repeat sampling over the course of a season or experimental manipulation.
 Hyperspectral reflectance measurements in particular also have more information content than direct trait measurements, with a single observation capable of providing information about multiple traits [@roth_leaf_2016].
+This means that spectra are uniquely equipped to avoid disaggregation of trait information [@clark_individual-scale_2011].
 Optical functional types (**Ustin & Gamon 2010**)
 Spectral measurements have been successfully used to investigate:
 
-    * Leaf reflectance is related to plant stress [@carter_responses_1993; @penuelas_reflectance_1994; @penuelas_reflectance_1993]
-    * @serbin_leaf_2011 -- Sensitivity to temperature (PLSR)
-    * @serbin_spectroscopic_2014 -- Trait estimation (PLSR)
-    * @asner_amazonian_2014 -- Investigate the drivers of functional diversity (very similar to what I'm trying to do, only limited to the Amazon, and using PLSR)
-    * Refer to review by @penuelas_visible_1998
+* Leaf reflectance is related to plant stress [@carter_responses_1993; @penuelas_reflectance_1994; @penuelas_reflectance_1993]
+* @serbin_leaf_2011 -- Sensitivity to temperature (PLSR)
+* @serbin_spectroscopic_2014 -- Trait estimation (PLSR)
+* @asner_amazonian_2014 -- Investigate the drivers of functional diversity (very similar to what I'm trying to do, only limited to the Amazon, and using PLSR)
+* Refer to review by @penuelas_visible_1998
+* @zajec_limestone_2016 show effects of limestone dust deposition on leaf optical properties and traits.
+
 
 Moreover, spectral measurements also provide a link to remote sensing, which creates the potential for trait inference at the landscape and regional scale over long time scales [@asner_large-scale_2016].
 Understanding spectral and functional variability at the plot scale is also important to determining the potential of using satellite remote sensing, which is fundamentally limited by spatial resolution to at least the plot scale and above, to study traits.
@@ -61,37 +87,59 @@ Third, the use of radiative transfer models is important to understanding the un
 In particular, complex multivariate regression analyses such as PLSR select wavelengths based entirely on model accuracy rather than physical meaning of the underlying coefficients (though diligent studies check that these variable selection techniques align with known absorption features; e.g. @serbin_spectroscopic_2014).
 
 The PROSPECT 5B model predicts leaf reflectance and transmittance as a function of the effective number of leaf mesophyll layers, chlorophyll and carotenoid concentrations, **Cbrown**, water content, and dry matter content [@feret_prospect-4_2008], collectively referred to henceforth as "leaf optical traits".
+
 Leaf mesophyll number is important because...
+
 Chlorophyll concentrations control light absorption and photosynthetic potential (**Richardson et al. 2002**), and, as the most nitrogen-rich component of leaves, provide a useful indication of leaf nitrogen (and general nutrition) status [@moran_differentiation_2000].
+
 Carotenoid pigments in this context encompass many different pigments related to the xanthophyll cycle. They are related to photochemical stress 
 [@magney_assessing_2014] (** See references in Magney**) **and other stuff**.
 Brown matter concentrations are **???**.
+
 Leaf water content is related to drought stress [@carter_responses_1993; @asner_progressive_2016; @penuelas_reflectance_1993; @penuelas_reflectance_1994] (**Refs in Asner 2016**), nutrient stress (**REFS**), and insect damage [@cheng_continuous_2010] and is a key variable for assessing susceptibility of ecosystems to fire [@agee_foliar_2002].
-Leaf dry matter content is **???**.
+
+Leaf dry matter content:
+
+* Correlated with specific leaf area and leaf nitrogen [@laughlin_multi-trait_2010], and therefore an important indicator of plant position on the leaf economic spectrum [@wright_worldwide_2004; **others**].
+
 In addition to exploring these optical traits, we also examine their relationship with to leaf nitrogen per unit mass, related to carboxylation efficiency and which are an important indicator of nutrient stress (**Field & Mooney 1986**), and leaf mass per area (LMA), an indicator of plant strategy with regard to carbon allocation and light availability [@poorter_causes_2009].
 
 This study is driven by the following research questions:
 
-    1. How accurate is Bayesian PROSPECT inversion for estimating leaf traits from spectra across a variety of ecosystems?
-    2. How are leaf optical traits related to other leaf foliar traits?
-    3. What are the biotic and abiotic drivers of variability in leaf optical traits? 
+#. How accurate is Bayesian PROSPECT inversion for estimating leaf traits from spectra across a variety of ecosystems?
+#. How are leaf optical traits related to other leaf foliar traits?
+#. What are the biotic and abiotic drivers of variability in leaf optical traits? 
 
 Although the plant ecology tends to focus on interspecific variability, intraspecific variability is also important [@albert_intraspecific_2010; @albert_multi-trait_2010; @albert_when_2011].
 
 
-*Papers to read, because they're similar, or otherwise relevant to the analyses*
+## Further reading
 
-    * @asner_amazonian_2014 -- GLMs on traits
-    * @asner_functional_2014 -- another Asner leaf spectra paper
-    * @chavana-bryant_leaf_2016 -- PLSR on traits in the tropics
-    * @wu_convergence_2016 -- I site them here
-    * @grime_evidence_1977 -- Prominent ecological theory of trait variability
-    * @sandel_multidimensional_2016 -- Good introduction text to traits (and look through refs therein)
-    * Other windows still open in Chrome...
+Trait theory papers:
+
+* @grime_evidence_1977 -- Prominent ecological theory of trait variability: competitors, stress-tolerators, ruderals (CSR)
+* @westoby_leaf-height-seed_1998 -- Leaf height seed (LHS) plant strategy idea, similar to Grime's CSR
+* @clark_individual-scale_2011 -- Why within species competition is more important for biodiversity than among species competition.
+* @kraft_functional_2008 -- Similar to above; niche differentiation within a forest
+* @mcgill_rebuilding_2006
+* @westoby_land-plant_2006
+* @westoby_plant_2002
+* @violle_towards_2009
+* @sandel_multidimensional_2016 -- Good introduction text to traits (and look through refs therein)
+* @hooper_effects_2005 -- Review of effects of biodiversity on ecosystem functioning
+
+Spectra-trait studies:
+
+* @asner_amazonian_2014 -- GLMs on traits
+* @asner_functional_2014 -- another Asner leaf spectra paper
+* @chavana-bryant_leaf_2016 -- PLSR on traits in the tropics
+* @wu_convergence_2016 -- I site them here
+
+... and other windows still open in Chrome.
 
 *More questions / ideas*
     
-    * How well does PROSPECT inversion capture each level of variability?
-        - Perform validations on aggregated averages by species, and maybe functional type, site, attributes, etc.
-        - Possibly investigate not just absolute trait values, but residuals from above means
+* How well does PROSPECT inversion capture each level of variability?
+    - Perform validations on aggregated averages by species, and maybe functional type, site, attributes, etc.
+    - Possibly investigate not just absolute trait values, but residuals from above means
 

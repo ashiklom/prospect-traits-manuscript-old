@@ -5,6 +5,8 @@
 ```{r setup-methods}
 
 site_info <- readRDS('site_info.rds')
+biomes <- read_csv('scripts/biomes.csv') %>%
+    mutate(temp = x, prec = y * 10)
 
 ```
 
@@ -17,7 +19,9 @@ sitemap_dat <- tbl(specdb, 'samples') %>%
     left_join(tbl(specdb, 'sites')) %>%
     collect %>%
     left_join(site_info) %>%
-    count(sitecode, site_lat, site_lon, temp, prec, projectcode)
+    count(sitecode, site_lat, site_lon, temp, prec, projectcode) %>%
+    ungroup() %>%
+    mutate(prec = udunits2::ud.convert(prec, 'mm', 'cm'))
 
 x_lims <- round(range(sitemap_dat$site_lon, na.rm = TRUE))
 y_lims <- round(range(sitemap_dat$site_lat, na.rm = TRUE))
@@ -26,9 +30,22 @@ ggplot(sitemap_dat) +
     borders('world', xlim = x_lims, ylim = y_lims) +
     geom_point()
 
-ggplot(sitemap_dat) + 
-    aes(x = temp, y = prec, size = n, color = projectcode) + 
-    geom_point()
+biome_colors <- c("Subtropical desert" = "navajowhite3",
+                  'Temperate grassland desert' = "darkgoldenrod1",
+                  'Woodland shrubland' = "sienna",
+                  'Temperate forest' = "darkolivegreen4",
+                  'Boreal forest' = "darkseagreen3",
+                  'Temperate rain forest' = "forestgreen",
+                  'Tropical rain forest' = "darkgreen",
+                  'Tropical forest savanna' = "olivedrab",
+                  'Tundra' = "gray")
+
+ggplot() + 
+    aes(x = prec, y = temp) +
+    geom_polygon(data = biomes, aes(fill = biome), size = 2, alpha = 0.4) + 
+    geom_point(data = sitemap_dat, aes(size = n, color = projectcode)) + 
+    scale_fill_manual(values = biome_colors)
+
 
 ```
 
@@ -40,6 +57,14 @@ Bayesian inversion of PROSPECT [@shiklomanov_quantifying_2016].
 
 
 Ideas:
-    * Calculate some 'T-statistics', as in @violle_return_2012 ?
-    * 
+
+* Calculate some 'T-statistics', as in @violle_return_2012 ?
+
+* Try the "fourth corner method" as in @dray_testing_2008
+
+    - Build a matrix of species abundance at different sites, a matrix of trait values of species, and a matrix describing the environmental conditions at each site
+
+    - It seems like this falls into the Jim Clark aggregation trap of discarding individual variability. 
+      Could itself be an interesting finding?
+      Probably too much for one paper.
 

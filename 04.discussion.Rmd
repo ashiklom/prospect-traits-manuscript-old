@@ -23,12 +23,26 @@ Importance of intraspecific variability in ecology, and how to study it [@violle
 
 @asner_functional_2014 -- Also very similar. Look at his GLM approach.
 
+In ponderosa pine-Gambel oak, mixed conifer, and subalpine forests (US Southwest, Arizona, near Grand Canyon), specific leaf area increased in mean (decreased LMA) and variance (increased for LMA too) [@laughlin_predictive_2012].
+@laughlin_predictive_2012 also observed high variance in traits -- as much as 60% -- for a given MAT.
+
+In grazed, semi-natural grasslands in Europe, plant life history (**which traits?**) associated with availabile phosphorus, while grazing intensity is related to C:N ratio. 
+Specifically, SLA increased (LMA decreased) with disturbance intensity, while onset of flowering and C:N ratio decreased. 
+Phosphorus was positively related to SLA (negatively to LMA) and onset of flowering, and negatively related to C:N ratio, seed mass, and polycarpic life history (?) [@kleyer_assessing_2012].
+
+@laughlin_multi-trait_2010 has evidence of leaf economic relationships in ponderosa pine forest in northern Arizona; high SLA (low LMA) species also have high leaf and fine root N and low leaf dry matter content.
+
+Among Australian eucalypt taxa, low SLA (high LMA) improves the response of short species to rainfall and sunlight; tall species increased with rainfall and sunlight over all SLA values, but low SLA (high LMA) species were particularly sensitive to rainfall [@pollock_role_2012].
+
 @roth_leaf_2016 -- Three different principal components of spectral variability.
 PC1 correlates best with leaf structure and surface scattering.
 PC2 correlates best with lignin, water, and LMA.
 PC3 correlates with surface scattering and pigments.
 
+Coexistence depends on competition being stronger within than between species [@clark_individuals_2010] (**More theory on this**).
 
+The future is remote sensing of functional traits.
+Remote sensing provides an approach to overcoming the inherent issues with space for time substitution by measuring ecosystem responses to climate change directly through time [@clark_climate_2011].
 
 
 ## Other notes
