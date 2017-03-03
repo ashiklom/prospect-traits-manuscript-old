@@ -1,42 +1,52 @@
 # Introduction
 
-Vegetation is a critical component of the biosphere that mediates climate, modifies the hydrologic cycle, is a haven for biodiversity, and provides many natural resources [@bonan_forests_2008]. 
-Unfortunately, current predictions about the future of the terrestrial biosphere are highly uncertain, as evidenced by the huge disparities in model projections of the magnitude and direction of the land carbon sink [@friedlingstein_uncertainties_2014] .
-Most ecosystem models currently represent plants as belonging to discrete “functional types” with fixed parameters, but approaches based on continuously varying plant traits more effectively capture gradual adaptation of ecosystems to environmental change [@van_bodegom_going_2012]. 
+## Outline
 
-
+**Biodiversity, specifically plant functional diversity, is important**
 Plant functional diversity is inextricably linked to ecosystem functioning [@reichstein_linking_2014].
-
 Relationship of functional diversity to overall productivity is complex, with increased productivity with increasing biodiversity in many cases (**refs in Hooper**) but evidence suggesting such increases are limited to certain species combinations [@hooper_overyielding_2004; probably @hooper_effects_2005].
 
-Plant functional traits modulate species responses to environmental gradients [@pollock_role_2012; **others**].
 
-
-Studies using traits to model community composition:
+**Plant functional traits are a powerful framework for studying plant functional diversity** [@violle_let_2007].
+Identification of coordinated relationships of plant functional traits with environmental conditions is appealing for ecological inference and modelling because it greatly facilitates the representation of functional response to environmental change [@van_bodegom_fully_2014; @]. (**DGVM trait papers here**)
+Traits can also be used to model community composition:
 
 * @jamil_selecting_2013 -- species means, GLMM 
 * Shipley's MaxEnt model [@shipley_plant_2006; @laughlin_climatic_2011]
 * Laughlin's hierarchical model [@laughlin_predictive_2012]
 * Community-weighted means, custom "CATS" model [@frenette-dussault_trait-based_2013]
+* PCA on traits to classify plants into Grime's CSR functional types [@pierce_allocating_2013]
+* Multimodal version of the traitspace model
 
+Leaf traits in particular are consistently among the most important traits for predicting community composition [@laughlin_intrinsic_2014].
+Plant functional traits modulate species responses to environmental gradients [@pollock_role_2012; **others**].
+Understanding the structure and inherent dimensionality of the plant functional trait space is important to identifying the marginal information content of multiple trait observations, which is critical to maximizing the utility of costly trait collection efforts and for predicting species distributions [@laughlin_intrinsic_2014; @bernhardt-romermann_identification_2008; @shiklomanov_scaling_????; @weiher_challenging_1999; @perez-harguindeguy_new_2013].
 Better understanding of the drivers of trait variability will also be useful for imputation of missing data in trait databases [@taugourdeau_filling_2014].
 This imputation also provides an excellent mechanism for testing theories of functional variability, as the imputation is effectively a phylogenetic forecast.
 
-Understanding the structure and inherent dimensionality of the plant functional trait space is important to identifying the marginal information content of multiple trait observations, which is critical to maximizing the utility of costly trait collection efforts and for predicting species distributions [@laughlin_intrinsic_2014; @bernhardt-romermann_identification_2008; @shiklomanov_scaling_????].
 
-Leaf traits are consistently among the most important traits for predicting community composition [@laughlin_intrinsic_2014].
+**Lots to be gained from global studies of species and community-level means.**
+Many important theories of species-level function related to traits, aided by the increased prevalence of global trait datasets [e.g. TRY, @kattge_try_2011; betydb, @lebauer_betydb:_2017].
 
-Recent syntheses of large trait databases (such as TRY, @kattge_try_2011) have contributed immensely to our understanding of drivers of global plant trait variability at evolutionary time scales. 
-For example, strong negative covariance at the global scale between foliar traits favoring rapid growth (e.g., nutrient concentrations, photosynthetic rate) and traits related to recalcitrance (e.g., mass per area, longevity) has been suggested to be an indicator of an evolutionary strategic trade-off between acquisitive and conservative plant strategies, termed the "leaf economic spectrum" [@wright_worldwide_2004; @reich_world-wide_2014; @diaz_global_2016].
-The relative position of plants along this axis is related to climate and edaphic variables [@ordonez_global_2009]. **(MORE HERE).**
+Leaf and plant economic spectrum [@wright_worldwide_2004; @reich_world-wide_2014; @diaz_global_2016; @ordonez_global_2009]
 
-* *How do traits vary with climate and soil? Use as counterexample later.*
 
-Identification of coordinated relationships of plant functional traits with environmental conditions is appealing for ecological inference and modelling because it greatly facilitates the representation of functional response to environmental change. (**Can be said better**)
+**Need to capture sub-species-level variability**
+Understanding variability at the sub-species level is critical to predictive ecology, as this is the scale at which most relevant ecophysiological processes occur.
+To quote @clark_individual-scale_2011, "Species do not compete, individuals do. Species do not respond to climate, individuals respond to weather."
+Community mean trait variability is driven both by composition and plasticity of individual species [@richardson_resorption_2005].
+@clark_why_2016 argues that uncertainty in composition contributes more than uncertainty in traits to overall uncertainty in community-weighted means.
+
+Although the plant ecology tends to focus on interspecific variability, intraspecific variability is also important [@albert_intraspecific_2010; @albert_multi-trait_2010; @albert_when_2011].
+
+
+**Measuring enough traits for multi-scale inference is hard. Leaf spectral measurements are a promising solution.**
+
+## Old Notes
+
 However, plant economic relationships often do not hold at smaller scales.
 For example, in an analysis of global foliar plant traits from the TRY database, Shiklomanov et al. [-@shiklomanov_scaling_????] (in review) found that trait variability is fundamentally hierarchical, with leaf economic relationships primarily observed between means of plant functional types while the same correlations within plant functional types were significantly weaker or even of opposite sign.
 Many studies of plant traits at the scale of individual sites also found weak or no evidence of leaf economic relationships (**REF**).
-@feng_scale_2013 found that the relationship between leaf nitrogen and Vcmax (**CHECK THIS**) had distinctly different slopes depending on the functional type of interest.
 The same is true of studies of trait variability across environmental gradients.
 For instance, although globally, *TRAIT X DECLINES/INCREASES* with temperature, local-scale studies along elevation gradients observed the opposite (**REF**). 
 Similarly, although enhanced nutrient availability should promote increased *TRAIT X*, greenhouse studies precisely controlling soil nutrient levels observed *TRAIT X INCREASES/DECLINES* with increased N availability (**REF**).
@@ -46,7 +56,7 @@ For instance, many studies in grasslands [e.g. @kleyer_assessing_2012 **and refs
 
 Limiting similarity tends towards trait divergence at smaller scales [@clark_individual-scale_2011; @kraft_functional_2008; **refs therein; need a classic paper here**].
 
-In addition, leaf economic traits do not capture all aspects of plant function; for instance, @li_leaf_2015 found that they are decoupled from plant hydraulic traits. 
+In addition, leaf economic traits do not capture all aspects of plant function; for instance, they are decoupled from plant hydraulic traits [@li_leaf_2015; @sack_hydrology_2003].
 @westoby_leaf-height-seed_1998 strategy has three axes, of which only one is related to the leaf economic spectrum [@laughlin_multi-trait_2010].
 (**More examples**). 
 
@@ -100,17 +110,15 @@ Leaf water content is related to drought stress [@carter_responses_1993; @asner_
 
 Leaf dry matter content:
 
-* Correlated with specific leaf area and leaf nitrogen [@laughlin_multi-trait_2010], and therefore an important indicator of plant position on the leaf economic spectrum [@wright_worldwide_2004; **others**].
+* Correlated with specific leaf area and leaf nitrogen [@laughlin_multi-trait_2010; @pierce_allocating_2013], and therefore an important indicator of plant position on the leaf economic spectrum [@wright_worldwide_2004; **others**].
 
-In addition to exploring these optical traits, we also examine their relationship with to leaf nitrogen per unit mass, related to carboxylation efficiency and which are an important indicator of nutrient stress (**Field & Mooney 1986**), and leaf mass per area (LMA), an indicator of plant strategy with regard to carbon allocation and light availability [@poorter_causes_2009].
+In addition to exploring these optical traits, we also examine their relationship with to leaf nitrogen per unit mass, related to carboxylation efficiency and which are an important indicator of nutrient stress (**Field & Mooney 1986**), and leaf mass per area (LMA), an indicator of plant strategy with regard to carbon allocation and light availability [@ackerly_functional_2004; @poorter_causes_2009].
 
 This study is driven by the following research questions:
 
 #. How accurate is Bayesian PROSPECT inversion for estimating leaf traits from spectra across a variety of ecosystems?
 #. How are leaf optical traits related to other leaf foliar traits?
 #. What are the biotic and abiotic drivers of variability in leaf optical traits? 
-
-Although the plant ecology tends to focus on interspecific variability, intraspecific variability is also important [@albert_intraspecific_2010; @albert_multi-trait_2010; @albert_when_2011].
 
 
 ## Further reading

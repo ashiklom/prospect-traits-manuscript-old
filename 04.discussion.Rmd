@@ -34,6 +34,8 @@ Phosphorus was positively related to SLA (negatively to LMA) and onset of flower
 
 Among Australian eucalypt taxa, low SLA (high LMA) improves the response of short species to rainfall and sunlight; tall species increased with rainfall and sunlight over all SLA values, but low SLA (high LMA) species were particularly sensitive to rainfall [@pollock_role_2012].
 
+@pierce_allocating_2013 treat find that LDMC is strongly negatively correlated with SLA (positively with LMA) and, more weakly, with leaf N, and strongly positively correlated with leaf C.
+
 @roth_leaf_2016 -- Three different principal components of spectral variability.
 PC1 correlates best with leaf structure and surface scattering.
 PC2 correlates best with lignin, water, and LMA.
