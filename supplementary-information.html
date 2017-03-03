@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>(Working title) PROSPECT traits</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta name="description" content="(Working title) PROSPECT traits">
+  <meta name="generator" content="bookdown 0.3 and GitBook 2.6.7">
+
+  <meta property="og:title" content="(Working title) PROSPECT traits" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="(Working title) PROSPECT traits" />
+  
+  
+  
+
+<meta name="author" content="Alexey Shiklomanov">
+<meta name="author" content="Shawn Serbin">
+<meta name="author" content="Michael Dietze">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="references.html">
+
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+</head>
+
+<body>
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Abstract</a></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="introduction.html"><a href="introduction.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#old-notes"><i class="fa fa-check"></i><b>1.2</b> Old Notes</a></li>
+<li class="chapter" data-level="1.3" data-path="introduction.html"><a href="introduction.html#further-reading"><i class="fa fa-check"></i><b>1.3</b> Further reading</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>2</b> Methods</a><ul>
+<li class="chapter" data-level="2.1" data-path="methods.html"><a href="methods.html#data"><i class="fa fa-check"></i><b>2.1</b> Data</a></li>
+<li class="chapter" data-level="2.2" data-path="methods.html"><a href="methods.html#trait-estimation-from-spectra"><i class="fa fa-check"></i><b>2.2</b> Trait estimation from spectra</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="methods.html"><a href="methods.html#prospect-5b-model"><i class="fa fa-check"></i><b>2.2.1</b> PROSPECT 5B model</a></li>
+<li class="chapter" data-level="2.2.2" data-path="methods.html"><a href="methods.html#inversion-algorithm"><i class="fa fa-check"></i><b>2.2.2</b> Inversion algorithm</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="methods.html"><a href="methods.html#statistical-analysis"><i class="fa fa-check"></i><b>2.3</b> Statistical analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>3</b> Results</a><ul>
+<li class="chapter" data-level="3.1" data-path="results.html"><a href="results.html#rtm-inversion-methodological-considerations"><i class="fa fa-check"></i><b>3.1</b> RTM inversion / Methodological considerations</a></li>
+<li class="chapter" data-level="3.2" data-path="results.html"><a href="results.html#sources-of-trait-variability"><i class="fa fa-check"></i><b>3.2</b> Sources of trait variability</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="results.html"><a href="results.html#correlations-among-prospect-traits"><i class="fa fa-check"></i><b>3.2.1</b> Correlations among PROSPECT traits</a></li>
+<li class="chapter" data-level="3.2.2" data-path="results.html"><a href="results.html#drivers-of-variability-in-prospect-traits"><i class="fa fa-check"></i><b>3.2.2</b> Drivers of variability in PROSPECT traits</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>4</b> Discussion</a><ul>
+<li class="chapter" data-level="4.1" data-path="discussion.html"><a href="discussion.html#methods-1"><i class="fa fa-check"></i><b>4.1</b> Methods</a></li>
+<li class="chapter" data-level="4.2" data-path="discussion.html"><a href="discussion.html#ecology"><i class="fa fa-check"></i><b>4.2</b> Ecology</a></li>
+<li class="chapter" data-level="4.3" data-path="discussion.html"><a href="discussion.html#other-notes"><i class="fa fa-check"></i><b>4.3</b> Other notes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>5</b> References</a></li>
+<li class="chapter" data-level="6" data-path="supplementary-information.html"><a href="supplementary-information.html"><i class="fa fa-check"></i><b>6</b> Supplementary information</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">(Working title) PROSPECT traits</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="supplementary-information" class="section level1">
+<h1><span class="header-section-number">6</span> Supplementary information</h1>
+<div class="figure"><span id="fig:modelagreement"></span>
+<img src="_main_files/figure-html/modelagreement-1.png" alt="Comparison of parameter estimates across PROSPECT versions. p4 = PROSPECT 4, p5 = PROSPECT 5, p5b = PROSPECT 5B." width="960" />
+<p class="caption">
+Figure 6.1: Comparison of parameter estimates across PROSPECT versions. p4 = PROSPECT 4, p5 = PROSPECT 5, p5b = PROSPECT 5B.
+</p>
+</div>
+<p>Agreement between models is strongly parameter dependent. The most consistent agreement was for the water (Cw) and dry matter content (Cm) parameters. Agreement between PROSPECT 4 and 5 was substantially better than agreement of either model with PROSPECT 5B.</p>
+<p>Overall, PROSPECT 5B had the best inversion accuracy, with the highest R2 values for all parameters except dry matter content (“Cm”). By parameter, the best inversion accuracy was achieved for leaf water content (“Cw”), with all remaining parameters having roughly comparable, poor inversion accuracy.</p>
+
+<div id="refs" class="references">
+<div>
+<p>Ackerly, David. 2004. “Functional Strategies of Chaparral Shrubs in Relation to Seasonal Water Deficit and Disturbance.” <em>Ecological Monographs</em> 74 (1): 25–44. doi:<a href="https://doi.org/10.1890/03-4022">10.1890/03-4022</a>.</p>
+</div>
+<div>
+<p>Agee, James K., Clinton S. Wright, Nathan Williamson, and Mark H. Huff. 2002. “Foliar Moisture Content of Pacific Northwest Vegetation and Its Relation to Wildland Fire Behavior.” <em>Forest Ecology and Management</em> 167 (13): 57–66. doi:<a href="https://doi.org/10.1016/S0378-1127(01)00690-9">10.1016/S0378-1127(01)00690-9</a>.</p>
+</div>
+<div>
+<p>Albert, Cécile H., Fabrice Grassein, Frank M. Schurr, Ghislain Vieilledent, and Cyrille Violle. 2011. “When and How Should Intraspecific Variability Be Considered in Trait-Based Plant Ecology?” <em>Perspectives in Plant Ecology, Evolution and Systematics</em> 13 (3): 217–25. doi:<a href="https://doi.org/10.1016/j.ppees.2011.04.003">10.1016/j.ppees.2011.04.003</a>.</p>
+</div>
+<div>
+<p>Albert, Cécile Hélène, Wilfried Thuiller, Nigel Gilles Yoccoz, Rolland Douzet, Serge Aubert, and Sandra Lavorel. 2010. “A Multi-Trait Approach Reveals the Structure and the Relative Importance of Intra- Vs. Interspecific Variability in Plant Traits.” <em>Functional Ecology</em> 24 (6): 1192–1201. doi:<a href="https://doi.org/10.1111/j.1365-2435.2010.01727.x">10.1111/j.1365-2435.2010.01727.x</a>.</p>
+</div>
+<div>
+<p>Albert, Cécile Hélène, Wilfried Thuiller, Nigel Gilles Yoccoz, Alex Soudant, Florian Boucher, Patrick Saccone, and Sandra Lavorel. 2010. “Intraspecific Functional Variability: Extent, Structure and Sources of Variation.” <em>Journal of Ecology</em> 98 (3): 604–13. doi:<a href="https://doi.org/10.1111/j.1365-2745.2010.01651.x">10.1111/j.1365-2745.2010.01651.x</a>.</p>
+</div>
+<div>
+<p>Asner, Gregory P., Philip G. Brodrick, Christopher B. Anderson, Nicholas Vaughn, David E. Knapp, and Roberta E. Martin. 2016. “Progressive Forest Canopy Water Loss During the 20122015 California Drought.” <em>Proceedings of the National Academy of Sciences</em> 113 (2): E249–E255. doi:<a href="https://doi.org/10.1073/pnas.1523397113">10.1073/pnas.1523397113</a>.</p>
+</div>
+<div>
+<p>Asner, Gregory P., David E. Knapp, Christopher B. Anderson, Roberta E. Martin, and Nicholas Vaughn. 2016. “Large-Scale Climatic and Geophysical Controls on the Leaf Economics Spectrum.” <em>Proceedings of the National Academy of Sciences</em> 113 (28): E4043–E4051. doi:<a href="https://doi.org/10.1073/pnas.1604863113">10.1073/pnas.1604863113</a>.</p>
+</div>
+<div>
+<p>Asner, Gregory P., Roberta E. Martin, Loreli Carranza-Jiménez, Felipe Sinca, Raul Tupayachi, Christopher B. Anderson, and Paola Martinez. 2014. “Functional and Biological Diversity of Foliar Spectra in Tree Canopies Throughout the Andes to Amazon Region.” <em>New Phytologist</em> 204 (1): 127–39. doi:<a href="https://doi.org/10.1111/nph.12895">10.1111/nph.12895</a>.</p>
+</div>
+<div>
+<p>Asner, Gregory P., Roberta E. Martin, Raul Tupayachi, Christopher B. Anderson, Felipe Sinca, Loreli Carranza-Jiménez, and Paola Martinez. 2014. “Amazonian Functional Diversity from Forest Canopy Chemical Assembly.” <em>Proceedings of the National Academy of Sciences</em> 111 (15): 5604–9. doi:<a href="https://doi.org/10.1073/pnas.1401181111">10.1073/pnas.1401181111</a>.</p>
+</div>
+<div>
+<p>Bernhardt-Römermann, Markus, Christine Römermann, Robert Nuske, Andreas Parth, Stefan Klotz, Wolfgang Schmidt, and Jutta Stadler. 2008. “On the Identification of the Most Suitable Traits for Plant Functional Trait Analyses.” <em>Oikos</em> 117 (10): 1533–41. doi:<a href="https://doi.org/10.1111/j.0030-1299.2008.16776.x">10.1111/j.0030-1299.2008.16776.x</a>.</p>
+</div>
+<div>
+<p>Blackburn, George Alan, and Jelle Garke Ferwerda. 2008. “Retrieval of Chlorophyll Concentration from Leaf Reflectance Spectra Using Wavelet Analysis.” <em>Remote Sensing of Environment</em>, Remote sensing data assimilation special issue, 112 (4): 1614–32. doi:<a href="https://doi.org/10.1016/j.rse.2007.08.005">10.1016/j.rse.2007.08.005</a>.</p>
+</div>
+<div>
+<p>Bruce, L. M., and J. Li. 2001. “Wavelets for Computationally Efficient Hyperspectral Derivative Analysis.” <em>IEEE Transactions on Geoscience and Remote Sensing</em> 39 (7): 1540–6. doi:<a href="https://doi.org/10.1109/36.934085">10.1109/36.934085</a>.</p>
+</div>
+<div>
+<p>Carter, Gregory A. 1993. “Responses of Leaf Spectral Reflectance to Plant Stress.” <em>American Journal of Botany</em> 80 (3): 239–43. doi:<a href="https://doi.org/10.2307/2445346">10.2307/2445346</a>.</p>
+</div>
+<div>
+<p>Chavana-Bryant, Cecilia, Yadvinder Malhi, Jin Wu, Gregory P. Asner, Athanasios Anastasiou, Brian J. Enquist, Eric G. Cosio Caravasi, et al. 2016. “Leaf Aging of Amazonian Canopy Trees as Revealed by Spectral and Physiochemical Measurements.” <em>New Phytologist</em>, February, n/a–n/a. doi:<a href="https://doi.org/10.1111/nph.13853">10.1111/nph.13853</a>.</p>
+</div>
+<div>
+<p>Cheng, T., B. Rivard, and A. Sánchez-Azofeifa. 2011. “Spectroscopic Determination of Leaf Water Content Using Continuous Wavelet Analysis.” <em>Remote Sensing of Environment</em> 115 (2): 659–70. doi:<a href="https://doi.org/10.1016/j.rse.2010.11.001">10.1016/j.rse.2010.11.001</a>.</p>
+</div>
+<div>
+<p>Cheng, T., B. Rivard, G. A. Sánchez-Azofeifa, J. Feng, and M. Calvo-Polanco. 2010. “Continuous Wavelet Analysis for the Detection of Green Attack Damage Due to Mountain Pine Beetle Infestation.” <em>Remote Sensing of Environment</em> 114 (4): 899–910. doi:<a href="https://doi.org/10.1016/j.rse.2009.12.005">10.1016/j.rse.2009.12.005</a>.</p>
+</div>
+<div>
+<p>Cheng, Tao, Benoit Rivard, Arturo G. Sánchez-Azofeifa, Jean-Baptiste Féret, Stéphane Jacquemoud, and Susan L. Ustin. 2014. “Deriving Leaf Mass Per Area (LMA) from Foliar Reflectance Across a Variety of Plant Species Using Continuous Wavelet Analysis.” <em>ISPRS Journal of Photogrammetry and Remote Sensing</em> 87 (January): 28–38. doi:<a href="https://doi.org/10.1016/j.isprsjprs.2013.10.009">10.1016/j.isprsjprs.2013.10.009</a>.</p>
+</div>
+<div>
+<p>Clark, James S. 2010. “Individuals and the Variation Needed for High Species Diversity in Forest Trees.” <em>Science</em> 327 (5969): 1129–32. doi:<a href="https://doi.org/10.1126/science.1183506">10.1126/science.1183506</a>.</p>
+</div>
+<div>
+<p>———. 2016. “Why Species Tell More About Traits Than Traits About Species: Predictive Analysis.” <em>Ecology</em> 97 (8): 1979–93. doi:<a href="https://doi.org/10.1002/ecy.1453">10.1002/ecy.1453</a>.</p>
+</div>
+<div>
+<p>Clark, James S., David M. Bell, Michelle H. Hersh, and Lauren Nichols. 2011. “Climate Change Vulnerability of Forest Biodiversity: Climate and Competition Tracking of Demographic Rates.” <em>Global Change Biology</em> 17 (5): 1834–49. doi:<a href="https://doi.org/10.1111/j.1365-2486.2010.02380.x">10.1111/j.1365-2486.2010.02380.x</a>.</p>
+</div>
+<div>
+<p>Clark, James S., David M. Bell, Michelle H. Hersh, Matthew C. Kwit, Emily Moran, Carl Salk, Anne Stine, Denis Valle, and Kai Zhu. 2011. “Individual-Scale Variation, Species-Scale Differences: Inference Needed to Understand Diversity.” <em>Ecology Letters</em> 14 (12): 1273–87. doi:<a href="https://doi.org/10.1111/j.1461-0248.2011.01685.x">10.1111/j.1461-0248.2011.01685.x</a>.</p>
+</div>
+<div>
+<p>Clark, Matthew L., and Dar A. Roberts. 2012. “Species-Level Differences in Hyperspectral Metrics Among Tropical Rainforest Trees as Determined by a Tree-Based Classifier.” <em>Remote Sensing</em> 4 (6): 1820–55. doi:<a href="https://doi.org/10.3390/rs4061820">10.3390/rs4061820</a>.</p>
+</div>
+<div>
+<p>Colombo, R., M. Meroni, A. Marchesi, L. Busetto, M. Rossini, C. Giardino, and C. Panigada. 2008. “Estimation of Leaf and Canopy Water Content in Poplar Plantations by Means of Hyperspectral Indices and Inverse Modeling.” <em>Remote Sensing of Environment</em>, Remote sensing data assimilation special issue, 112 (4): 1820–34. doi:<a href="https://doi.org/10.1016/j.rse.2007.09.005">10.1016/j.rse.2007.09.005</a>.</p>
+</div>
+<div>
+<p>da Luz, Beatriz Ribeiro. 2006. “Attenuated Total Reflectance Spectroscopy of Plant Leaves: A Tool for Ecological and Botanical Studies.” <em>New Phytologist</em> 172 (2): 305–18. doi:<a href="https://doi.org/10.1111/j.1469-8137.2006.01823.x">10.1111/j.1469-8137.2006.01823.x</a>.</p>
+</div>
+<div>
+<p>Danson, F. M., and P. Bowyer. 2004. “Estimating Live Fuel Moisture Content from Remotely Sensed Reflectance.” <em>Remote Sensing of Environment</em>, Forest fire prevention and assessment, 92 (3): 309–21. doi:<a href="https://doi.org/10.1016/j.rse.2004.03.017">10.1016/j.rse.2004.03.017</a>.</p>
+</div>
+<div>
+<p>Datt, Bisun. 1998. “Remote Sensing of Chlorophyll a, Chlorophyll B, Chlorophyll A+b, and Total Carotenoid Content in Eucalyptus Leaves.” <em>Remote Sensing of Environment</em> 66 (2): 111–21. doi:<a href="https://doi.org/10.1016/S0034-4257(98)00046-7">10.1016/S0034-4257(98)00046-7</a>.</p>
+</div>
+<div>
+<p>Díaz, Sandra, Jens Kattge, Johannes H. C. Cornelissen, Ian J. Wright, Sandra Lavorel, Stéphane Dray, Björn Reu, et al. 2016. “The Global Spectrum of Plant Form and Function.” <em>Nature</em> 529 (7585): 167–71. doi:<a href="https://doi.org/10.1038/nature16489">10.1038/nature16489</a>.</p>
+</div>
+<div>
+<p>Donovan, Lisa A., Hafiz Maherali, Christina M. Caruso, Heidrun Huber, and Hans de Kroon. 2011. “The Evolution of the Worldwide Leaf Economics Spectrum.” <em>Trends in Ecology &amp; Evolution</em> 26 (2): 88–95. doi:<a href="https://doi.org/10.1016/j.tree.2010.11.011">10.1016/j.tree.2010.11.011</a>.</p>
+</div>
+<div>
+<p>Dray, Stéphane, and Pierre Legendre. 2008. “Testing the Species Traits: The Fourth-Corner Problem Revisited.” <em>Ecology</em> 89 (12): 3400–3412. doi:<a href="https://doi.org/10.1890/08-0349.1">10.1890/08-0349.1</a>.</p>
+</div>
+<div>
+<p>Feret, Jean-Baptiste, Christophe François, Gregory P. Asner, Anatoly A. Gitelson, Roberta E. Martin, Luc P. R. Bidel, Susan L. Ustin, Guerric le Maire, and Stéphane Jacquemoud. 2008. “PROSPECT-4 and 5: Advances in the Leaf Optical Properties Model Separating Photosynthetic Pigments.” <em>Remote Sensing of Environment</em> 112 (6): 3030–43. doi:<a href="https://doi.org/10.1016/j.rse.2008.02.012">10.1016/j.rse.2008.02.012</a>.</p>
+</div>
+<div>
+<p>Féret, Jean-Baptiste, Christophe François, Anatoly Gitelson, Gregory P. Asner, Karen M. Barry, Cinzia Panigada, Andrew D. Richardson, and Stéphane Jacquemoud. 2011. “Optimizing Spectral Indices and Chemometric Analysis of Leaf Chemical Properties Using Radiative Transfer Modeling.” <em>Remote Sensing of Environment</em> 115 (10): 2742–50. doi:<a href="https://doi.org/10.1016/j.rse.2011.06.016">10.1016/j.rse.2011.06.016</a>.</p>
+</div>
+<div>
+<p>Fourty, Th., F. Baret, S. Jacquemoud, G. Schmuck, and J. Verdebout. 1996. “Leaf Optical Properties with Explicit Description of Its Biochemical Composition: Direct and Inverse Problems.” <em>Remote Sensing of Environment</em> 56 (2): 104–17. doi:<a href="https://doi.org/10.1016/0034-4257(95)00234-0">10.1016/0034-4257(95)00234-0</a>.</p>
+</div>
+<div>
+<p>Frenette-Dussault, Cédric, Bill Shipley, Driss Meziane, and Yves Hingrat. 2013. “Trait-Based Climate Change Predictions of Plant Community Structure in Arid Steppes.” <em>Journal of Ecology</em> 101 (2): 484–92. doi:<a href="https://doi.org/10.1111/1365-2745.12040">10.1111/1365-2745.12040</a>.</p>
+</div>
+<div>
+<p>Grime, J. P. 1977. “Evidence for the Existence of Three Primary Strategies in Plants and Its Relevance to Ecological and Evolutionary Theory.” <em>The American Naturalist</em> 111 (982): 1169–94. doi:<a href="https://doi.org/10.1086/283244">10.1086/283244</a>.</p>
+</div>
+<div>
+<p>Grossman, Y. L., S. L. Ustin, S. Jacquemoud, E. W. Sanderson, G. Schmuck, and J. Verdebout. 1996. “Critique of Stepwise Multiple Linear Regression for the Extraction of Leaf Biochemistry Information from Leaf Reflectance Data.” <em>Remote Sensing of Environment</em> 56 (3): 182–93. doi:<a href="https://doi.org/10.1016/0034-4257(95)00235-9">10.1016/0034-4257(95)00235-9</a>.</p>
+</div>
+<div>
+<p>Hooper, D. U., F. S. Chapin, J. J. Ewel, A. Hector, P. Inchausti, S. Lavorel, J. H. Lawton, et al. 2005. “Effects of Biodiversity on Ecosystem Functioning: A Consensus of Current Knowledge.” <em>Ecological Monographs</em> 75 (1): 3–35. doi:<a href="https://doi.org/10.1890/04-0922">10.1890/04-0922</a>.</p>
+</div>
+<div>
+<p>Hooper, David U., and Jeffrey S. Dukes. 2004. “Overyielding Among Plant Functional Groups in a Long-Term Experiment.” <em>Ecology Letters</em> 7 (2): 95–105. doi:<a href="https://doi.org/10.1046/j.1461-0248.2003.00555.x">10.1046/j.1461-0248.2003.00555.x</a>.</p>
+</div>
+<div>
+<p>Jacquemoud, S. 1993. “Inversion of the PROSPECT + SAIL Canopy Reflectance Model from AVIRIS Equivalent Spectra: Theoretical Study.” <em>Remote Sensing of Environment</em>, Airbone imaging spectrometry, 44 (2): 281–92. doi:<a href="https://doi.org/10.1016/0034-4257(93)90022-P">10.1016/0034-4257(93)90022-P</a>.</p>
+</div>
+<div>
+<p>Jacquemoud, S., and F. Baret. 1990. “PROSPECT: A Model of Leaf Optical Properties Spectra.” <em>Remote Sensing of Environment</em> 34 (2): 75–91. doi:<a href="https://doi.org/10.1016/0034-4257(90)90100-Z">10.1016/0034-4257(90)90100-Z</a>.</p>
+</div>
+<div>
+<p>Jacquemoud, S., F. Baret, B. Andrieu, F. M. Danson, and K. Jaggard. 1995. “Extraction of Vegetation Biophysical Parameters by Inversion of the PROSPECT + SAIL Models on Sugar Beet Canopy Reflectance Data. Application to TM and AVIRIS Sensors.” <em>Remote Sensing of Environment</em> 52 (3): 163–72. doi:<a href="https://doi.org/10.1016/0034-4257(95)00018-V">10.1016/0034-4257(95)00018-V</a>.</p>
+</div>
+<div>
+<p>Jacquemoud, S., S. L. Ustin, J. Verdebout, G. Schmuck, G. Andreoli, and B. Hosgood. 1996. “Estimating Leaf Biochemistry Using the PROSPECT Leaf Optical Properties Model.” <em>Remote Sensing of Environment</em> 56 (3): 194–202. doi:<a href="https://doi.org/10.1016/0034-4257(95)00238-3">10.1016/0034-4257(95)00238-3</a>.</p>
+</div>
+<div>
+<p>Jamil, Tahira, Wim A. Ozinga, Michael Kleyer, and Cajo J.F. ter Braak. 2013. “Selecting Traits That Explain Speciesenvironment Relationships: A Generalized Linear Mixed Model Approach.” <em>Journal of Vegetation Science</em> 24 (6): 988–1000. doi:<a href="https://doi.org/10.1111/j.1654-1103.2012.12036.x">10.1111/j.1654-1103.2012.12036.x</a>.</p>
+</div>
+<div>
+<p>Kattge, J., S. Díaz, S. Lavorel, I. C. Prentice, P. Leadley, G. Bönisch, E. Garnier, et al. 2011. “TRY a Global Database of Plant Traits.” <em>Global Change Biology</em> 17 (9): 2905–35. doi:<a href="https://doi.org/10.1111/j.1365-2486.2011.02451.x">10.1111/j.1365-2486.2011.02451.x</a>.</p>
+</div>
+<div>
+<p>Kleyer, Michael, Stéphane Dray, Francescode Bello, Jan Lepš, Robin J. Pakeman, Barbara Strauss, Wilfried Thuiller, and Sandra Lavorel. 2012. “Assessing Species and Community Functional Responses to Environmental Gradients: Which Multivariate Methods?” <em>Journal of Vegetation Science</em> 23 (5): 805–21. doi:<a href="https://doi.org/10.1111/j.1654-1103.2012.01402.x">10.1111/j.1654-1103.2012.01402.x</a>.</p>
+</div>
+<div>
+<p>Kokaly, Raymond F., and Roger N. Clark. 1999. “Spectroscopic Determination of Leaf Biochemistry Using Band-Depth Analysis of Absorption Features and Stepwise Multiple Linear Regression.” <em>Remote Sensing of Environment</em> 67 (3): 267–87. doi:<a href="https://doi.org/10.1016/S0034-4257(98)00084-4">10.1016/S0034-4257(98)00084-4</a>.</p>
+</div>
+<div>
+<p>Kraft, Nathan J. B., Renato Valencia, and David D. Ackerly. 2008. “Functional Traits and Niche-Based Tree Community Assembly in an Amazonian Forest.” <em>Science</em> 322 (5901): 580–82. doi:<a href="https://doi.org/10.1126/science.1160662">10.1126/science.1160662</a>.</p>
+</div>
+<div>
+<p>Laughlin, Daniel C. 2014. “The Intrinsic Dimensionality of Plant Traits and Its Relevance to Community Assembly.” <em>Journal of Ecology</em> 102 (1): 186–93. doi:<a href="https://doi.org/10.1111/1365-2745.12187">10.1111/1365-2745.12187</a>.</p>
+</div>
+<div>
+<p>Laughlin, Daniel C., Peter Z. Fulé, David W. Huffman, Joseph Crouse, and Etienne Laliberté. 2011. “Climatic Constraints on Trait-Based Forest Assembly.” <em>Journal of Ecology</em> 99 (6): 1489–99. doi:<a href="https://doi.org/10.1111/j.1365-2745.2011.01885.x">10.1111/j.1365-2745.2011.01885.x</a>.</p>
+</div>
+<div>
+<p>Laughlin, Daniel C., Chaitanya Joshi, Sarah J. Richardson, Duane A. Peltzer, Norman W.H. Mason, and David A. Wardle. 2015. “Quantifying Multimodal Trait Distributions Improves Trait-Based Predictions of Species Abundances and Functional Diversity.” <em>Journal of Vegetation Science</em> 26 (1): 46–57. doi:<a href="https://doi.org/10.1111/jvs.12219">10.1111/jvs.12219</a>.</p>
+</div>
+<div>
+<p>Laughlin, Daniel C., Chaitanya Joshi, Peter M. van Bodegom, Zachary A. Bastow, and Peter Z. Fulé. 2012. “A Predictive Model of Community Assembly That Incorporates Intraspecific Trait Variation.” <em>Ecology Letters</em> 15 (11): 1291–9. doi:<a href="https://doi.org/10.1111/j.1461-0248.2012.01852.x">10.1111/j.1461-0248.2012.01852.x</a>.</p>
+</div>
+<div>
+<p>Laughlin, Daniel C., Jessica J. Leppert, Margaret M. Moore, and Carolyn Hull Sieg. 2010. “A Multi-Trait Test of the Leaf-Height-Seed Plant Strategy Scheme with 133 Species from a Pine Forest Flora.” <em>Functional Ecology</em> 24 (3): 493–501. doi:<a href="https://doi.org/10.1111/j.1365-2435.2009.01672.x">10.1111/j.1365-2435.2009.01672.x</a>.</p>
+</div>
+<div>
+<p>LeBauer, David, Rob Kooper, Patrick Mulrooney, Scott Rohde, Dan Wang, Stephen P. Long, and Michael C. Dietze. 2017. “Betydb: A Yield, Trait, and Ecosystem Service Database Applied to Second-Generation Bioenergy Feedstock Production.” <em>GCB Bioenergy</em>, January, n/a–n/a. doi:<a href="https://doi.org/10.1111/gcbb.12420">10.1111/gcbb.12420</a>.</p>
+</div>
+<div>
+<p>Li, Le, M. Luke McCormack, Chengen Ma, Deliang Kong, Qian Zhang, Xiaoyong Chen, Hui Zeng, Ülo Niinemets, and Dali Guo. 2015. “Leaf Economics and Hydraulic Traits Are Decoupled in Five Species-Rich Tropical-Subtropical Forests.” <em>Ecology Letters</em> 18 (9): 899–906. doi:<a href="https://doi.org/10.1111/ele.12466">10.1111/ele.12466</a>.</p>
+</div>
+<div>
+<p>Louault, F., V.d. Pillar, J. Aufrère, E. Garnier, and J.-F. Soussana. 2005. “Plant Traits and Functional Types in Response to Reduced Disturbance in a Semi-Natural Grassland.” <em>Journal of Vegetation Science</em> 16 (2): 151–60. doi:<a href="https://doi.org/10.1111/j.1654-1103.2005.tb02350.x">10.1111/j.1654-1103.2005.tb02350.x</a>.</p>
+</div>
+<div>
+<p>Lusk, Christopher H., Peter B. Reich, Rebecca A. Montgomery, David D. Ackerly, and Jeannine Cavender-Bares. 2008. “Why Are Evergreen Leaves so Contrary About Shade?” <em>Trends in Ecology &amp; Evolution</em> 23 (6): 299–303. doi:<a href="https://doi.org/10.1016/j.tree.2008.02.006">10.1016/j.tree.2008.02.006</a>.</p>
+</div>
+<div>
+<p>Magney, Troy S., Spencer A. Eusden, Jan U. H. Eitel, Barry A. Logan, Jingjue Jiang, and Lee A. Vierling. 2014. “Assessing Leaf Photoprotective Mechanisms Using Terrestrial LiDAR: Towards Mapping Canopy Photosynthetic Performance in Three Dimensions.” <em>New Phytologist</em> 201 (1): 344–56. doi:<a href="https://doi.org/10.1111/nph.12453">10.1111/nph.12453</a>.</p>
+</div>
+<div>
+<p>Maki, M, M Ishiahra, and M Tamura. 2004. “Estimation of Leaf Water Status to Monitor the Risk of Forest Fires by Using Remotely Sensed Data.” <em>Remote Sensing of Environment</em> 90 (4): 441–50. doi:<a href="https://doi.org/10.1016/j.rse.2004.02.002">10.1016/j.rse.2004.02.002</a>.</p>
+</div>
+<div>
+<p>McGill, Brian J., Brian J. Enquist, Evan Weiher, and Mark Westoby. 2006. “Rebuilding Community Ecology from Functional Traits.” <em>Trends in Ecology &amp; Evolution</em> 21 (4): 178–85. doi:<a href="https://doi.org/10.1016/j.tree.2006.02.002">10.1016/j.tree.2006.02.002</a>.</p>
+</div>
+<div>
+<p>Messier, Julie, Brian J. McGill, and Martin J. Lechowicz. 2010. “How Do Traits Vary Across Ecological Scales? A Case for Trait-Based Ecology.” <em>Ecology Letters</em> 13 (7): 838–48. doi:<a href="https://doi.org/10.1111/j.1461-0248.2010.01476.x">10.1111/j.1461-0248.2010.01476.x</a>.</p>
+</div>
+<div>
+<p>Messier, Julie, Brian J. McGill, Brian J. Enquist, and Martin J. Lechowicz. 2016. “Trait Variation and Integration Across Scales: Is the Leaf Economic Spectrum Present at Local Scales?” <em>Ecography</em>, July, n/a–n/a. doi:<a href="https://doi.org/10.1111/ecog.02006">10.1111/ecog.02006</a>.</p>
+</div>
+<div>
+<p>Moran, Jonathan A., Alan K. Mitchell, Graeme Goodmanson, and Keri A. Stockburger. 2000. “Differentiation Among Effects of Nitrogen Fertilization Treatments on Conifer Seedlings by Foliar Reflectance: A Comparison of Methods.” <em>Tree Physiology</em> 20 (16): 1113–20. doi:<a href="https://doi.org/10.1093/treephys/20.16.1113">10.1093/treephys/20.16.1113</a>.</p>
+</div>
+<div>
+<p>Ordoñez, Jenny C., Peter M. Van Bodegom, Jan-Philip M. Witte, Ian J. Wright, Peter B. Reich, and Rien Aerts. 2009. “A Global Study of Relationships Between Leaf Traits, Climate and Soil Measures of Nutrient Fertility.” <em>Global Ecology and Biogeography</em> 18 (2): 137–49. doi:<a href="https://doi.org/10.1111/j.1466-8238.2008.00441.x">10.1111/j.1466-8238.2008.00441.x</a>.</p>
+</div>
+<div>
+<p>Peñuelas, J., I. Filella, C. Biel, L. Serrano, and R. SAVÉ. 1993. “The Reflectance at the 950970 Nm Region as an Indicator of Plant Water Status.” <em>International Journal of Remote Sensing</em> 14 (10): 1887–1905. doi:<a href="https://doi.org/10.1080/01431169308954010">10.1080/01431169308954010</a>.</p>
+</div>
+<div>
+<p>Peñuelas, J., J. A. Gamon, A. L. Fredeen, J. Merino, and C. B. Field. 1994. “Reflectance Indices Associated with Physiological Changes in Nitrogen- and Water-Limited Sunflower Leaves.” <em>Remote Sensing of Environment</em> 48 (2): 135–46. doi:<a href="https://doi.org/10.1016/0034-4257(94)90136-8">10.1016/0034-4257(94)90136-8</a>.</p>
+</div>
+<div>
+<p>Peñuelas, Josep, and Iolanda Filella. 1998. “Visible and Near-Infrared Reflectance Techniques for Diagnosing Plant Physiological Status.” <em>Trends in Plant Science</em> 3 (4): 151–56. doi:<a href="https://doi.org/10.1016/S1360-1385(98)01213-8">10.1016/S1360-1385(98)01213-8</a>.</p>
+</div>
+<div>
+<p>Pérez-Harguindeguy, N., S. Díaz, E. Garnier, S. Lavorel, H. Poorter, P. Jaureguiberry, M. S. Bret-Harte, et al. 2013. “New Handbook for Standardised Measurement of Plant Functional Traits Worldwide.” <em>Australian Journal of Botany</em> 61 (3): 167–234. doi:<a href="https://doi.org/10.1071/BT12225">10.1071/BT12225</a>.</p>
+</div>
+<div>
+<p>Pierce, Simon, Guido Brusa, Ilda Vagge, and Bruno E. L. Cerabolini. 2013. “Allocating CSR Plant Functional Types: The Use of Leaf Economics and Size Traits to Classify Woody and Herbaceous Vascular Plants.” <em>Functional Ecology</em> 27 (4): 1002–10. doi:<a href="https://doi.org/10.1111/1365-2435.12095">10.1111/1365-2435.12095</a>.</p>
+</div>
+<div>
+<p>Pollock, Laura J., William K. Morris, and Peter A. Vesk. 2012. “The Role of Functional Traits in Species Distributions Revealed Through a Hierarchical Model.” <em>Ecography</em> 35 (8): 716–25. doi:<a href="https://doi.org/10.1111/j.1600-0587.2011.07085.x">10.1111/j.1600-0587.2011.07085.x</a>.</p>
+</div>
+<div>
+<p>Poorter, Hendrik, Ülo Niinemets, Lourens Poorter, Ian J. Wright, and Rafael Villar. 2009. “Causes and Consequences of Variation in Leaf Mass Per Area (LMA): A Meta-Analysis.” <em>New Phytologist</em> 182 (3): 565–88. doi:<a href="https://doi.org/10.1111/j.1469-8137.2009.02830.x">10.1111/j.1469-8137.2009.02830.x</a>.</p>
+</div>
+<div>
+<p>Reich, Peter B. 2014. “The World-Wide ‘Fastslow’ Plant Economics Spectrum: A Traits Manifesto.” <em>Journal of Ecology</em> 102 (2): 275–301. doi:<a href="https://doi.org/10.1111/1365-2745.12211">10.1111/1365-2745.12211</a>.</p>
+</div>
+<div>
+<p>Reichstein, Markus, Michael Bahn, Miguel D. Mahecha, Jens Kattge, and Dennis D. Baldocchi. 2014. “Linking Plant and Ecosystem Functional Biogeography.” <em>Proceedings of the National Academy of Sciences</em> 111 (38): 13697–13702. doi:<a href="https://doi.org/10.1073/pnas.1216065111">10.1073/pnas.1216065111</a>.</p>
+</div>
+<div>
+<p>Richardson, Sarah J., Duane A. Peltzer, Robert B. Allen, and Matt S. McGlone. 2005. “Resorption Proficiency Along a Chronosequence: Responses Among Communities and Within Species.” <em>Ecology</em> 86 (1): 20–25. doi:<a href="https://doi.org/10.1890/04-0524">10.1890/04-0524</a>.</p>
+</div>
+<div>
+<p>Rivard, B., J. Feng, A. Gallie, and A. Sanchez-Azofeifa. 2008. “Continuous Wavelets for the Improved Use of Spectral Libraries and Hyperspectral Data.” <em>Remote Sensing of Environment</em> 112 (6): 2850–62. doi:<a href="https://doi.org/10.1016/j.rse.2008.01.016">10.1016/j.rse.2008.01.016</a>.</p>
+</div>
+<div>
+<p>Roth, Keely L., Angeles Casas, Margarita Huesca, Susan L. Ustin, Maria Mar Alsina, Spencer A. Mathews, and Michael L. Whiting. 2016. “Leaf Spectral Clusters as Potential Optical Leaf Functional Types Within California Ecosystems.” <em>Remote Sensing of Environment</em> 184 (October): 229–46. doi:<a href="https://doi.org/10.1016/j.rse.2016.07.014">10.1016/j.rse.2016.07.014</a>.</p>
+</div>
+<div>
+<p>Sack, L., P. D. Cowan, N. Jaikumar, and N. M. Holbrook. 2003. “The ‘Hydrology’ of Leaves: Co-Ordination of Structure and Function in Temperate Woody Species.” <em>Plant, Cell &amp; Environment</em> 26 (8): 1343–56. doi:<a href="https://doi.org/10.1046/j.0016-8025.2003.01058.x">10.1046/j.0016-8025.2003.01058.x</a>.</p>
+</div>
+<div>
+<p>Sandel, Brody, Alvaro G. Gutiérrez, Peter B. Reich, Franziska Schrodt, John Dickie, and Jens Kattge. 2015. “Estimating Themissing Species Bias in Plant Trait Measurements.” <em>Journal of Vegetation Science</em> 26 (5): 828–38. doi:<a href="https://doi.org/10.1111/jvs.12292">10.1111/jvs.12292</a>.</p>
+</div>
+<div>
+<p>Sandel, Brody, Anne-Christine Monnet, and Maria Vorontsova. 2016. “Multidimensional Structure of Grass Functional Traits Among Species and Assemblages.” <em>Journal of Vegetation Science</em> 27 (5): 1047–60. doi:<a href="https://doi.org/10.1111/jvs.12422">10.1111/jvs.12422</a>.</p>
+</div>
+<div>
+<p>Serbin, Shawn P., Dylan N. Dillaway, Eric L. Kruger, and Philip A. Townsend. 2011. “Leaf Optical Properties Reflect Variation in Photosynthetic Metabolism and Its Sensitivity to Temperature.” <em>Journal of Experimental Botany</em>, October, err294. doi:<a href="https://doi.org/10.1093/jxb/err294">10.1093/jxb/err294</a>.</p>
+</div>
+<div>
+<p>Serbin, Shawn P., Aditya Singh, Brenden E. McNeil, Clayton C. Kingdon, and Philip A. Townsend. 2014. “Spectroscopic Determination of Leaf Morphological and Biochemical Traits for Northern Temperate and Boreal Tree Species.” <em>Ecological Applications</em> 24 (7): 1651–69. doi:<a href="https://doi.org/10.1890/13-2110.1">10.1890/13-2110.1</a>.</p>
+</div>
+<div>
+<p>Shiklomanov, Alexey N., Michael C. Dietze, Toni Viskari, Philip A. Townsend, and Shawn P. Serbin. 2016. “Quantifying the Influences of Spectral Resolution on Uncertainty in Leaf Trait Estimates Through a Bayesian Approach to RTM Inversion.” <em>Remote Sensing of Environment</em> 183 (September): 226–38. doi:<a href="https://doi.org/10.1016/j.rse.2016.05.023">10.1016/j.rse.2016.05.023</a>.</p>
+</div>
+<div>
+<p>Shipley, Bill, Denis Vile, and Éric Garnier. 2006. “From Plant Traits to Plant Communities: A Statistical Mechanistic Approach to Biodiversity.” <em>Science</em> 314 (5800): 812–14. doi:<a href="https://doi.org/10.1126/science.1131344">10.1126/science.1131344</a>.</p>
+</div>
+<div>
+<p>Sims, Daniel A, and John A Gamon. 2002. “Relationships Between Leaf Pigment Content and Spectral Reflectance Across a Wide Range of Species, Leaf Structures and Developmental Stages.” <em>Remote Sensing of Environment</em> 81 (23): 337–54. doi:<a href="https://doi.org/10.1016/S0034-4257(02)00010-X">10.1016/S0034-4257(02)00010-X</a>.</p>
+</div>
+<div>
+<p>Stimson, Hugh C., David D. Breshears, Susan L. Ustin, and Shawn C. Kefauver. 2005. “Spectral Sensing of Foliar Water Conditions in Two Co-Occurring Conifer Species: Pinus Edulis and Juniperus Monosperma.” <em>Remote Sensing of Environment</em> 96 (1): 108–18. doi:<a href="https://doi.org/10.1016/j.rse.2004.12.007">10.1016/j.rse.2004.12.007</a>.</p>
+</div>
+<div>
+<p>Taugourdeau, Simon, Jean Villerd, Sylvain Plantureux, Olivier Huguenin-Elie, and Bernard Amiaud. 2014. “Filling the Gap in Functional Trait Databases: Use of Ecological Hypotheses to Replace Missing Data.” <em>Ecology and Evolution</em> 4 (7): 944–58. doi:<a href="https://doi.org/10.1002/ece3.989">10.1002/ece3.989</a>.</p>
+</div>
+<div>
+<p>van Bodegom, Peter M., Jacob C. Douma, and Lieneke M. Verheijen. 2014. “A Fully Traits-Based Approach to Modeling Global Vegetation Distribution.” <em>Proceedings of the National Academy of Sciences</em> 111 (38): 13733–8. doi:<a href="https://doi.org/10.1073/pnas.1304551110">10.1073/pnas.1304551110</a>.</p>
+</div>
+<div>
+<p>Violle, Cyrille, and Lin Jiang. 2009. “Towards a Trait-Based Quantification of Species Niche.” <em>Journal of Plant Ecology</em> 2 (2): 87–93. doi:<a href="https://doi.org/10.1093/jpe/rtp007">10.1093/jpe/rtp007</a>.</p>
+</div>
+<div>
+<p>Violle, Cyrille, Brian J. Enquist, Brian J. McGill, Lin Jiang, Cécile H. Albert, Catherine Hulshof, Vincent Jung, and Julie Messier. 2012. “The Return of the Variance: Intraspecific Variability in Community Ecology.” <em>Trends in Ecology &amp; Evolution</em> 27 (4): 244–52. doi:<a href="https://doi.org/10.1016/j.tree.2011.11.014">10.1016/j.tree.2011.11.014</a>.</p>
+</div>
+<div>
+<p>Violle, Cyrille, Marie-Laure Navas, Denis Vile, Elena Kazakou, Claire Fortunel, Irène Hummel, and Eric Garnier. 2007. “Let the Concept of Trait Be Functional!” <em>Oikos</em> 116 (5): 882–92. doi:<a href="https://doi.org/10.1111/j.0030-1299.2007.15559.x">10.1111/j.0030-1299.2007.15559.x</a>.</p>
+</div>
+<div>
+<p>Weiher, Evan, Adrie van der Werf, Ken Thompson, Michael Roderick, Eric Garnier, and Ove Eriksson. 1999. “Challenging Theophrastus: A Common Core List of Plant Traits for Functional Ecology.” <em>Journal of Vegetation Science</em> 10 (5): 609–20. doi:<a href="https://doi.org/10.2307/3237076">10.2307/3237076</a>.</p>
+</div>
+<div>
+<p>Westoby, Mark. 1998. “A Leaf-Height-Seed (LHS) Plant Ecology Strategy Scheme.” <em>Plant and Soil</em> 199 (2): 213–27. doi:<a href="https://doi.org/10.1023/A:1004327224729">10.1023/A:1004327224729</a>.</p>
+</div>
+<div>
+<p>Westoby, Mark, and Ian J. Wright. 2006. “Land-Plant Ecology on the Basis of Functional Traits.” <em>Trends in Ecology &amp; Evolution</em> 21 (5): 261–68. doi:<a href="https://doi.org/10.1016/j.tree.2006.02.004">10.1016/j.tree.2006.02.004</a>.</p>
+</div>
+<div>
+<p>Westoby, Mark, Daniel S. Falster, Angela T. Moles, Peter A. Vesk, and Ian J. Wright. 2002. “Plant Ecological Strategies: Some Leading Dimensions of Variation Between Species.” <em>Annual Review of Ecology and Systematics</em> 33 (1): 125–59. doi:<a href="https://doi.org/10.1146/annurev.ecolsys.33.010802.150452">10.1146/annurev.ecolsys.33.010802.150452</a>.</p>
+</div>
+<div>
+<p>Wright, Ian J., Peter B. Reich, Mark Westoby, David D. Ackerly, Zdravko Baruch, Frans Bongers, Jeannine Cavender-Bares, et al. 2004. “The Worldwide Leaf Economics Spectrum.” <em>Nature</em> 428 (6985): 821–27. doi:<a href="https://doi.org/10.1038/nature02403">10.1038/nature02403</a>.</p>
+</div>
+<div>
+<p>Wu, Jin, Cecilia Chavana-Bryant, Neill Prohaska, Shawn P. Serbin, Kaiyu Guan, Loren P. Albert, Xi Yang, et al. 2016. “Convergence in Relationships Between Leaf Traits, Spectra and Age Across Diverse Canopy Environments and Two Contrasting Tropical Forests.” <em>New Phytologist</em>, July, n/a–n/a. doi:<a href="https://doi.org/10.1111/nph.14051">10.1111/nph.14051</a>.</p>
+</div>
+<div>
+<p>Yoder, Barbara J., and Rita E. Pettigrew-Crosby. 1995. “Predicting Nitrogen and Chlorophyll Content and Concentrations from Reflectance Spectra (4002500 Nm) at Leaf and Canopy Scales.” <em>Remote Sensing of Environment</em> 53 (3): 199–211. doi:<a href="https://doi.org/10.1016/0034-4257(95)00135-N">10.1016/0034-4257(95)00135-N</a>.</p>
+</div>
+<div>
+<p>Zajec, Luka, David Gradinjan, Katja Klančnik, and Alenka Gaberščik. 2016. “Limestone Dust Alters the Optical Properties and Traits of Fagus Sylvatica Leaves.” <em>Trees</em>, July, 1–10. doi:<a href="https://doi.org/10.1007/s00468-016-1441-2">10.1007/s00468-016-1441-2</a>.</p>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="references.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>(Working title) PROSPECT traits</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta name="description" content="(Working title) PROSPECT traits">
+  <meta name="generator" content="bookdown 0.3 and GitBook 2.6.7">
+
+  <meta property="og:title" content="(Working title) PROSPECT traits" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="(Working title) PROSPECT traits" />
+  
+  
+  
+
+<meta name="author" content="Alexey Shiklomanov">
+<meta name="author" content="Shawn Serbin">
+<meta name="author" content="Michael Dietze">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="introduction.html">
+<link rel="next" href="results.html">
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+</head>
+
+<body>
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Abstract</a></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="introduction.html"><a href="introduction.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#old-notes"><i class="fa fa-check"></i><b>1.2</b> Old Notes</a></li>
+<li class="chapter" data-level="1.3" data-path="introduction.html"><a href="introduction.html#further-reading"><i class="fa fa-check"></i><b>1.3</b> Further reading</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="methods.html"><a href="methods.html"><i class="fa fa-check"></i><b>2</b> Methods</a><ul>
+<li class="chapter" data-level="2.1" data-path="methods.html"><a href="methods.html#data"><i class="fa fa-check"></i><b>2.1</b> Data</a></li>
+<li class="chapter" data-level="2.2" data-path="methods.html"><a href="methods.html#trait-estimation-from-spectra"><i class="fa fa-check"></i><b>2.2</b> Trait estimation from spectra</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="methods.html"><a href="methods.html#prospect-5b-model"><i class="fa fa-check"></i><b>2.2.1</b> PROSPECT 5B model</a></li>
+<li class="chapter" data-level="2.2.2" data-path="methods.html"><a href="methods.html#inversion-algorithm"><i class="fa fa-check"></i><b>2.2.2</b> Inversion algorithm</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="methods.html"><a href="methods.html#statistical-analysis"><i class="fa fa-check"></i><b>2.3</b> Statistical analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>3</b> Results</a><ul>
+<li class="chapter" data-level="3.1" data-path="results.html"><a href="results.html#rtm-inversion-methodological-considerations"><i class="fa fa-check"></i><b>3.1</b> RTM inversion / Methodological considerations</a></li>
+<li class="chapter" data-level="3.2" data-path="results.html"><a href="results.html#sources-of-trait-variability"><i class="fa fa-check"></i><b>3.2</b> Sources of trait variability</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="results.html"><a href="results.html#correlations-among-prospect-traits"><i class="fa fa-check"></i><b>3.2.1</b> Correlations among PROSPECT traits</a></li>
+<li class="chapter" data-level="3.2.2" data-path="results.html"><a href="results.html#drivers-of-variability-in-prospect-traits"><i class="fa fa-check"></i><b>3.2.2</b> Drivers of variability in PROSPECT traits</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="discussion.html"><a href="discussion.html"><i class="fa fa-check"></i><b>4</b> Discussion</a><ul>
+<li class="chapter" data-level="4.1" data-path="discussion.html"><a href="discussion.html#methods-1"><i class="fa fa-check"></i><b>4.1</b> Methods</a></li>
+<li class="chapter" data-level="4.2" data-path="discussion.html"><a href="discussion.html#ecology"><i class="fa fa-check"></i><b>4.2</b> Ecology</a></li>
+<li class="chapter" data-level="4.3" data-path="discussion.html"><a href="discussion.html#other-notes"><i class="fa fa-check"></i><b>4.3</b> Other notes</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>5</b> References</a></li>
+<li class="chapter" data-level="6" data-path="supplementary-information.html"><a href="supplementary-information.html"><i class="fa fa-check"></i><b>6</b> Supplementary information</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">(Working title) PROSPECT traits</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="methods" class="section level1">
+<h1><span class="header-section-number">2</span> Methods</h1>
+<div id="data" class="section level2">
+<h2><span class="header-section-number">2.1</span> Data</h2>
+<p>Data for this analysis comes from several different projects, reported in (projecttable).</p>
+<table>
+<caption><span id="tab:projecttable">Table 2.1: </span>Project information</caption>
+<thead>
+<tr class="header">
+<th align="left">code</th>
+<th align="left">Description</th>
+<th align="right"># sites</th>
+<th align="right"># species</th>
+<th align="right"># spectra</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">nasa_hyspiri</td>
+<td align="left">NASA HyspIRI field campaign</td>
+<td align="right">12</td>
+<td align="right">37</td>
+<td align="right">1448</td>
+</tr>
+<tr class="even">
+<td align="left">nasa_fft</td>
+<td align="left">NASA Forest Functional Types (FFT)</td>
+<td align="right">14</td>
+<td align="right">65</td>
+<td align="right">1382</td>
+</tr>
+<tr class="odd">
+<td align="left">accp</td>
+<td align="left">Accelerated Canopy Chemistry Program (ACCP)</td>
+<td align="right">6</td>
+<td align="right">46</td>
+<td align="right">980</td>
+</tr>
+<tr class="even">
+<td align="left">ngee_tropics</td>
+<td align="left">Next Generation Ecosystem Experiments (NGEE) – Tropics</td>
+<td align="right">2</td>
+<td align="right">27</td>
+<td align="right">708</td>
+</tr>
+<tr class="odd">
+<td align="left">yang_pheno</td>
+<td align="left">Seasonal leaf spectra and traits data by Xi Yang</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">661</td>
+</tr>
+<tr class="even">
+<td align="left">ngee_arctic</td>
+<td align="left">Next Generation Ecosystem Experiments (NGEE) – Arctic</td>
+<td align="right">2</td>
+<td align="right">13</td>
+<td align="right">615</td>
+</tr>
+<tr class="odd">
+<td align="left">divittorio_conifer</td>
+<td align="left">Conifer spectra from Alan Di Vittorio ozone study</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">504</td>
+</tr>
+<tr class="even">
+<td align="left">lopex</td>
+<td align="left">Leaf Optical Properties Experiment</td>
+<td align="right">1</td>
+<td align="right">45</td>
+<td align="right">330</td>
+</tr>
+<tr class="odd">
+<td align="left">angers</td>
+<td align="left">Angers France spectra from INRA</td>
+<td align="right">1</td>
+<td align="right">38</td>
+<td align="right">276</td>
+</tr>
+<tr class="even">
+<td align="left">wu_brazil</td>
+<td align="left">Wu et al. 2016 New Phytologist Brazil canopy traits study</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">166</td>
+</tr>
+<tr class="odd">
+<td align="left">foster_beetle</td>
+<td align="left">Foster et al. 2017 (FEM) bark beetle spectra study</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">59</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Total</td>
+<td align="right">45</td>
+<td align="right">232</td>
+<td align="right">7129</td>
+</tr>
+</tbody>
+</table>
+<div class="figure"><span id="fig:sitemap"></span>
+<img src="_main_files/figure-html/sitemap-1.png" alt="Sample distribution in geographic and climate space" width="960" />
+<p class="caption">
+Figure 2.1: Sample distribution in geographic and climate space
+</p>
+</div>
+<div class="figure"><span id="fig:sitemap"></span>
+<img src="_main_files/figure-html/sitemap-2.png" alt="Sample distribution in geographic and climate space" width="960" />
+<p class="caption">
+Figure 2.1: Sample distribution in geographic and climate space
+</p>
+</div>
+</div>
+<div id="trait-estimation-from-spectra" class="section level2">
+<h2><span class="header-section-number">2.2</span> Trait estimation from spectra</h2>
+<div id="prospect-5b-model" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> PROSPECT 5B model</h3>
+<p>The PROSPECT 5B model predicts leaf reflectance and transmittance as a function of the effective number of leaf mesophyll layers, chlorophyll and carotenoid concentrations, <strong>Cbrown</strong>, water content, and dry matter content <span class="citation">(Feret et al. 2008)</span>, collectively referred to henceforth as “leaf optical traits”.</p>
+<p>Leaf mesophyll number is important because…</p>
+<p>Chlorophyll concentrations control light absorption and photosynthetic potential (<strong>Richardson et al. 2002</strong>), and, as the most nitrogen-rich component of leaves, provide a useful indication of leaf nitrogen (and general nutrition) status <span class="citation">(Moran et al. 2000)</span>.</p>
+<p>Carotenoid pigments in this context encompass many different pigments related to the xanthophyll cycle. They are related to photochemical stress <span class="citation">(Magney et al. 2014)</span> (** See references in Magney<strong>) </strong>and other stuff<strong>. Brown matter concentrations are </strong>???**.</p>
+<p>Leaf water content is related to drought stress <span class="citation">(Carter 1993; Asner, Brodrick, et al. 2016; Peñuelas et al. 1993; Peñuelas et al. 1994)</span> (<strong>Refs in Asner 2016</strong>), nutrient stress (<strong>REFS</strong>), and insect damage <span class="citation">(Cheng et al. 2010)</span> and is a key variable for assessing susceptibility of ecosystems to fire <span class="citation">(Agee et al. 2002)</span>.</p>
+<p>Leaf dry matter content:</p>
+<ul>
+<li>Correlated with specific leaf area and leaf nitrogen <span class="citation">(Laughlin et al. 2010; Pierce et al. 2013)</span>, and therefore an important indicator of plant position on the leaf economic spectrum [<span class="citation">Wright et al. (2004)</span>; <strong>others</strong>].</li>
+</ul>
+<p>In addition to exploring these optical traits, we also examine their relationship with to leaf nitrogen per unit mass, related to carboxylation efficiency and which are an important indicator of nutrient stress (<strong>Field &amp; Mooney 1986</strong>), and leaf mass per area (LMA), an indicator of plant strategy with regard to carbon allocation and light availability <span class="citation">(Ackerly 2004; Poorter et al. 2009)</span>.</p>
+</div>
+<div id="inversion-algorithm" class="section level3">
+<h3><span class="header-section-number">2.2.2</span> Inversion algorithm</h3>
+<p>Bayesian inversion of PROSPECT <span class="citation">(Shiklomanov et al. 2016)</span>. Added effective sample size normalization, which down-weights the likelihood and therefore provides more conservative uncertainty estimates.</p>
+</div>
+</div>
+<div id="statistical-analysis" class="section level2">
+<h2><span class="header-section-number">2.3</span> Statistical analysis</h2>
+<p>Ideas:</p>
+<ul>
+<li><p>Calculate some ‘T-statistics’, as in <span class="citation">Violle et al. (2012)</span> ?</p></li>
+<li><p>Try the “fourth corner method” as in <span class="citation">Dray and Legendre (2008)</span></p>
+<ul>
+<li><p>Build a matrix of species abundance at different sites, a matrix of trait values of species, and a matrix describing the environmental conditions at each site</p></li>
+<li><p>It seems like this falls into the Jim Clark aggregation trap of discarding individual variability. Could itself be an interesting finding? Probably too much for one paper.</p></li>
+</ul></li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="introduction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="results.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
+
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
