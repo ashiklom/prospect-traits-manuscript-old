@@ -2,33 +2,74 @@
 
 ## Data
 
-```{r setup-methods}
+Data for this analysis comes from several different projects, reported in \ref(projecttable).
+
+```{r projecttable}
+
+spectra_samples <- tbl(specdb, 'samples') %>%
+    inner_join(tbl(specdb, 'spectra_info') %>% 
+               filter(spectratype != 'transmittance')) %>%
+    left_join(tbl(specdb, 'plots')) %>%
+    left_join(tbl(specdb, 'sites')) %>%
+    left_join(tbl(specdb, 'projects'))
+
+byproject <- spectra_samples %>%
+    group_by(projectcode, projectdescription) %>%
+    summarize(sites = n_distinct(sitecode),
+              species = n_distinct(speciescode),
+              samples = n_distinct(samplecode)) %>%
+    arrange(desc(samples)) %>%
+    collect
+
+totals <- spectra_samples %>%
+    summarize(sites = n_distinct(sitecode),
+              species = n_distinct(speciescode),
+              samples = n_distinct(samplecode)) %>%
+    mutate(projectcode = '', projectdescription = 'Total') %>% 
+    collect
+
+projecttable <- bind_rows(byproject, totals) %>%
+    rename(code = projectcode,
+           Description = projectdescription,
+           '# sites' = sites, 
+           '# species' = species,
+           '# spectra' = samples)
+
+#pander::pandoc.table(projecttable, 
+                     #emphasize.strong.rows = nrow(projecttable),
+                     #set.caption = 'Project information')
+
+kable(projecttable, caption = 'Project information')
+
+```
+
+```{r sitemap, fig.cap = sitemap_cap, fig.width = 10, fig.height = 7}
+
+sitemap_cap <- paste('Sample distribution in geographic and climate space')
 
 site_info <- readRDS('site_info.rds')
 biomes <- read_csv('scripts/biomes.csv') %>%
     mutate(temp = x, prec = y * 10)
 
-```
-
-```{r sitemap, fig.cap = sitemap_cap}
-
-sitemap_cap <- paste('Sample distribution in geographic and climate space')
-
-sitemap_dat <- tbl(specdb, 'samples') %>%
-    left_join(tbl(specdb, 'plots') %>% select(plotcode, sitecode)) %>%
-    left_join(tbl(specdb, 'sites')) %>%
+sitemap_dat <- spectra_samples %>%
     collect %>%
     left_join(site_info) %>%
     count(sitecode, site_lat, site_lon, temp, prec, projectcode) %>%
     ungroup() %>%
-    mutate(prec = udunits2::ud.convert(prec, 'mm', 'cm'))
+    group_by(projectcode) %>%
+    mutate(nproj = sum(n)) %>%
+    ungroup() %>%
+    mutate(projectcode = forcats::fct_reorder(projectcode, nproj))
 
 x_lims <- round(range(sitemap_dat$site_lon, na.rm = TRUE))
 y_lims <- round(range(sitemap_dat$site_lat, na.rm = TRUE))
+
 ggplot(sitemap_dat) + 
-    aes(x = site_lon, y = site_lat, size = n, color = projectcode) +
+    aes(x = site_lon, y = site_lat, size = n, fill = projectcode) +
     borders('world', xlim = x_lims, ylim = y_lims) +
-    geom_point()
+    geom_point(pch = 21, color = 'black') + 
+    scale_fill_brewer(palette = 'Paired') + 
+    theme_bw()
 
 biome_colors <- c("Subtropical desert" = "navajowhite3",
                   'Temperate grassland desert' = "darkgoldenrod1",
@@ -40,18 +81,62 @@ biome_colors <- c("Subtropical desert" = "navajowhite3",
                   'Tropical forest savanna' = "olivedrab",
                   'Tundra' = "gray")
 
-ggplot() + 
-    aes(x = prec, y = temp) +
-    geom_polygon(data = biomes, aes(fill = biome), size = 2, alpha = 0.4) + 
-    geom_point(data = sitemap_dat, aes(size = n, color = projectcode)) + 
-    scale_fill_manual(values = biome_colors)
+#biome_labs <- biomes %>%
+    #group_by(biome) %>%
+    #summarize(x = mean(prec), y = mean(temp)) 
 
+biome_labs <- tribble(
+    ~biome, ~x, ~y,
+    'Boreal forest', 99.4, -0.417,
+    'Subtropical desert', 42.78, 23.87,
+    'Temperate forest', 160, 10,
+    'Temperate grassland desert', 16.64, 6.86,
+    'Temperate rain forest', 236, 12.5,
+    'Tropical rain forest', 340, 24,
+    'Tropical forest savanna', 150.53, 22.53,
+    'Tundra', 20, -10,
+    'Woodland shrubland', 85, 16)
+plt <- ggplot() + 
+    aes(x = prec, y = temp) +
+    geom_polygon(data = biomes, aes(fill = biome), size = 2, alpha = 0.2) + 
+    geom_point(data = sitemap_dat, aes(size = n, color = projectcode)) + 
+    geom_label(data = biome_labs, 
+                             aes(x = x, y = y, label = biome)) + 
+    scale_fill_manual(values = biome_colors) + 
+    scale_color_brewer(palette = 'Paired')
+plot(plt)
+#plotly::ggplotly(plt)
 
 ```
 
-## Inversion approach
+## Trait estimation from spectra
 
-Bayesian inversion of PROSPECT [@shiklomanov_quantifying_2016]. 
+### PROSPECT 5B model
+
+The PROSPECT 5B model predicts leaf reflectance and transmittance as a function of the effective number of leaf mesophyll layers, chlorophyll and carotenoid concentrations, **Cbrown**, water content, and dry matter content [@feret_prospect-4_2008], collectively referred to henceforth as "leaf optical traits".
+
+Leaf mesophyll number is important because...
+
+Chlorophyll concentrations control light absorption and photosynthetic potential (**Richardson et al. 2002**), and, as the most nitrogen-rich component of leaves, provide a useful indication of leaf nitrogen (and general nutrition) status [@moran_differentiation_2000].
+
+Carotenoid pigments in this context encompass many different pigments related to the xanthophyll cycle. They are related to photochemical stress 
+[@magney_assessing_2014] (** See references in Magney**) **and other stuff**.
+Brown matter concentrations are **???**.
+
+Leaf water content is related to drought stress [@carter_responses_1993; @asner_progressive_2016; @penuelas_reflectance_1993; @penuelas_reflectance_1994] (**Refs in Asner 2016**), nutrient stress (**REFS**), and insect damage [@cheng_continuous_2010] and is a key variable for assessing susceptibility of ecosystems to fire [@agee_foliar_2002].
+
+Leaf dry matter content:
+
+* Correlated with specific leaf area and leaf nitrogen [@laughlin_multi-trait_2010; @pierce_allocating_2013], and therefore an important indicator of plant position on the leaf economic spectrum [@wright_worldwide_2004; **others**].
+
+In addition to exploring these optical traits, we also examine their relationship with to leaf nitrogen per unit mass, related to carboxylation efficiency and which are an important indicator of nutrient stress (**Field & Mooney 1986**), and leaf mass per area (LMA), an indicator of plant strategy with regard to carbon allocation and light availability [@ackerly_functional_2004; @poorter_causes_2009].
+
+
+### Inversion algorithm
+
+Bayesian inversion of PROSPECT [@shiklomanov_quantifying_2016].
+Added effective sample size normalization, which down-weights the likelihood and therefore provides more conservative uncertainty estimates.
+
 
 ## Statistical analysis
 

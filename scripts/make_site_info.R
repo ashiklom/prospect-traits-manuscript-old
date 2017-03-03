@@ -17,3 +17,4 @@ sites <- tbl(specdb, 'sites') %>%
     mutate(prec = prec_data, 
            temp = temp_data / 10)
 
+saveRDS(sites, 'site_info.rds')
