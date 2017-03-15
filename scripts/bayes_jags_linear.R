@@ -1,5 +1,6 @@
 source('scripts/setup.R')
 library(runjags)
+runjags.options(force.summary = TRUE, modules = 'glm')
 
 my_sumsq <- function(value, attribute, bayesfit_summary, attribute_name) {
     coef_names <- rownames(bayesfit_summary)
@@ -12,6 +13,12 @@ my_sumsq <- function(value, attribute, bayesfit_summary, attribute_name) {
     return(c(effect_ss = effect_sumsq, 
              total_ss = tot_sumsq, 
              frac_expl = effect_sumsq / tot_sumsq))
+}
+
+getresult <- function(bayesfit_summary, parameter) {
+    rnames <- rownames(bayesfit_summary)
+    inds <- grep(paste0('^', parameter, '_'), rnames)
+    bayesfit_summary[inds,]
 }
 
 model_code <- 'model{
@@ -52,7 +59,7 @@ fit_data <- results_wide %>%
 
 x_mu <- fit_data[['parametermean_N']]
 x_tau <- 1 / (fit_data[['parametersd_N']])^2
-species <- fit_data[['species']] %>% as.integer
+species <- fit_data[['species']] %>% as.numeric
 n_species <- max(species)
 site <- fit_data[['site']] %>% as.integer
 n_site <- max(site)
@@ -62,11 +69,11 @@ project <- fit_data[['project']] %>% as.integer
 n_project <- max(project)
 n_row <- length(x_mu)
 
-out <- autorun.jags(model = model_code,
+out2 <- autorun.jags(model = model_code,
                     startburnin = 500,
                     startsample = 4000,
                     monitor = c('y0', 'y_tau', 'species_term', 'site_term',
-                                'species_site_term', 'project_term', 'deviance'),
+                                'species_site_term', 'project_term', 'dic'),
                     data = list(x_mu = x_mu, x_tau = x_tau,
                                 species = species, n_species = n_species,
                                 site = site, n_site = n_site,
@@ -76,7 +83,9 @@ out <- autorun.jags(model = model_code,
                                 n_row = n_row),
                     modules = c('glm'))
 
-out_sum <- summary(out)
+out$dic$dic
+# sum.mean.deviance 
+#         -6678.469 
 
 my_anova <- mapply(my_sumsq, 
                    attribute = list(species, site, species_site, project),
@@ -85,21 +94,16 @@ my_anova <- mapply(my_sumsq,
                                                      'species_site',
                                                      'project'),
                                                    '_term')),
-                   MoreArgs = list(value = x_mu, bayesfit_summary = out_sum))  %>% 
+                   MoreArgs = list(value = x_mu, bayesfit_summary = out$summaries))  %>% 
     t() %>% 
     'rownames<-'(c('species', 'site', 'species_site', 'project'))
 
-my_sumsq(x_mu, species, out_sum, 'species_term')
-#   effect_ss    total_ss   frac_expl 
-#  96.7964095 843.3026255   0.1147825 
-my_sumsq(x_mu, site, out_sum, 'site_term')
-#   effect_ss    total_ss   frac_expl 
-#  99.6768228 843.3026255   0.1181982 
-my_sumsq(x_mu, species_site, out_sum, 'species_site_term')
-#    effect_ss     total_ss    frac_expl 
-#  69.23711777 843.30262550   0.08210234 
-my_sumsq(x_mu, project, out_sum, 'project_term')
-# 240.3081625 843.3026255   0.2849608 
-#   effect_ss    total_ss   frac_expl 
-
-
+getresult(out$summaries, 'project') %>% 
+    'rownames<-'(fit_data[['project']] %>% levels) %>% 
+    data.frame %>% 
+    rownames_to_column() %>% 
+    as_data_frame %>% 
+    mutate(project = factor(rowname) %>% forcats::fct_reorder(Mean)) %>% 
+    ggplot() + 
+        aes(x = project, y = Mean) + 
+        geom_point()
