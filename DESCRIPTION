@@ -1,12 +1,11 @@
-Package: placeholder
-Title: Placeholder for travis build
+Package: pta
+Title: PROSPECT trait analysis
 Version: 0.0.1
 Imports: 
     methods,
     bookdown, 
     tidyverse,
     RSQLite,
-    rnoaa,
     PEcAnRTM,
     data.table,
     lmodel2,
@@ -14,3 +13,4 @@ Imports:
     corrplot
 Remotes:
     github::ashiklom/pecan/modules/rtm
+RoxygenNote: 6.0.1

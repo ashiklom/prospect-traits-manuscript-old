@@ -5,18 +5,8 @@ author:
     - Shawn Serbin
     - Michael Dietze
 bibliography: library.bib
+new_session: yes
 ---
-
-```{r setup-all, echo = FALSE, message = FALSE, warning = FALSE}
-
-library(knitr)
-
-# Set global chunk options
-opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-
-source('scripts/setup.R')
-
-```
 
 # Abstract {-}
 
