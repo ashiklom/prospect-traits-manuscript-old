@@ -3,10 +3,7 @@
 ```{r setup-methods, echo = FALSE, message = FALSE, warning = FALSE}
 library(pta)
 library(knitr)
-
 opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-
-specdb <- src_sqlite('extdata/leaf_spectra.db')
 ```
 
 ## Data

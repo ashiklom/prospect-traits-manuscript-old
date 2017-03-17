@@ -1,185 +1,29 @@
-# Results
-
-## RTM inversion / Methodological considerations
-
-```{r densfig, fig.cap = sumstatfigcap}
-sumstatfigcap <- paste('Histograms of inversion results by model and parameter')
-rsub <- results_all %>% 
-    filter(parameter %in% params) %>%
-    select(samplecode, modelname, parameter, parametermean) %>%
-    collect(n = Inf) %>%
-    mutate(parameter = factor(parameter, params))
-gpsub <- ggplot(rsub) + aes(x = parametermean) + 
-    facet_grid(modelname ~ parameter, scales = 'free_x') + 
-    geom_histogram()
-gpsub
-rsub %>%
-    group_by(modelname, parameter) %>%
-    summarize(stat = sprintf('%s (%s)',
-                             signif(mean(parametermean, na.rm = TRUE), 3),
-                             signif(sd(parametermean, na.rm = TRUE), 3))) %>%
-    spread(parameter, stat) %>%
-    kable(caption = 'Summary statistics by parameter and model')
-```
-
-NOTE: Not all inversions have finished running yet, and different models are in different states of completeness, so these results should be taken with a grain of salt.
-
-In general, none of the distributions of the means look extreme, and for the most part, they all have the same general shape. 
-
-
-```{r validation, fig.cap = valid_cap}
-
-valid_cap <- paste('Comparison of spectral trait estimates with',
-                   'direct measurements. ')
-
-ggplot(valid_dat %>% 
-       # Plot only the best-fitting 90% of data
-       group_by(parameter) %>%
-       mutate(asr = abs(scaledresid),
-              good = asr < quantile(asr, 0.9)) %>%
-       filter(good)) +
-    aes(x = parametermean, 
-        xmin = parametermean - parametersd, 
-        xmax = parametermean + parametersd,
-        y = traitvalue, 
-        color = projectcode) +
-    facet_wrap(~ leaf_type + parameter, scales = 'free', dir = 'h', ncol = 4) +
-    geom_errorbarh(color = 'grey', alpha = 0.4) + 
-    geom_point(alpha = 0.5, size = 0.5)  + 
-    geom_smooth(method = 'lm', se = FALSE) + 
-    geom_abline(linetype = 'dashed') + 
-    scale_color_brewer(palette = 'Dark2')
-
-# For shading the middle region of the histograms
-dummy <- tribble(
-    ~xx, ~region,
-    -0.1, 0,
-    0.1, 0,
-    -0.25, 1,
-    0.25, 1,
-    -0.5, 2,
-    0.5, 2,
-    -1, 3,
-    1, 3)
-
-ggplot(valid_dat) +
-    aes(x = scaledresid, y = ..ncount.., color = projectcode) + 
-    geom_area(data = dummy, 
-                aes(x = xx, y = 1, fill = region, group = region),
-                alpha = 0.2,
-                inherit.aes = FALSE) + 
-    geom_freqpoly(size = 2) +
-    geom_vline(xintercept = 0, linetype = 'dashed', color = 'black', size = 1.25) +
-    facet_grid(leaf_type ~ parameter, scales = 'free_x') + 
-    scale_color_brewer(palette = 'Dark2') + 
-    guides(fill = FALSE)
-
-```
-
-There is an additive conifer bias. 
-Beyond that, there seem to be issues with the Yang phenology and Wu Brazil datasets.
-
-```{r variancecompare, fig.cap=vccap, eval = FALSE}
-
-vccap <- 'Comparison of variance between spectral estimates and direct measurements.'
-
-variance_compare <- function(measure, estimate, data, ...) {
-    mu <- paste('mu', estimate, mod, 'SI', sep = '_')
-    indat <- filter_(data, .dots = sprintf('!is.na(%s)', c(measure, mu))) %>%
-        summarize_at(c(measure, mu), var) %>%
-        rename_(.dots = c('measure' = measure, 'estimate' = mu))
-    return(indat)
-}
-
-variance_dat <- mapply(variance_compare,
-                       valid_vec,
-                       names(valid_vec),
-                       MoreArgs = list(data = gg_valid), SIMPLIFY = FALSE) %>% 
-    bind_rows(.id = 'param') %>%
-    gather(variable, variance, -param)
-
-ggplot(variance_dat) + 
-    aes(x = variable, y = variance) + 
-    geom_bar(stat = 'identity') + 
-    facet_wrap(~param, scales = 'free')
-```
-
-In all cases, the measured values had a higher variance than estimates from spectral inversion. 
-The largest difference in variance between measured values and spectral estimates was for carotenoid and dry matter contents, while variance was closest for chlorophyll content.
-It should be noted that this comparison only applies to spectral values which have associated trait measurements -- i.e. the actual variance for all traits estimated from spectra may be considerably different.
-
-```{r covariancecompare, fig.cap = cvccap, eval = FALSE}
-
-cvccap <- paste('Comparison of covariance between spectral estimates ', 
-                'and direct measurements')
-cvparcols <- paste('mu', names(valid_vec), mod, 'SI', sep = '_')
-names(cvparcols) <- names(valid_vec)
-cvdat <- gg_valid %>%
-    filter_(.dots = paste(sprintf('!is.na(%s)', valid_vec), collapse = ' | '))
-
-mycorplot <- function(data, title, cols, ...) {
-    mat <- cor(select_(data, .dots = cols), use = 'pairwise.complete.obs')
-    cols <- colorRampPalette(c('red', 'grey30', 'blue'))(20)
-    corrplot::corrplot.mixed(mat, lower = 'ellipse', upper = 'number', 
-                             main = title, mar = c(0, 0, 1, 0), 
-                             col = cols, ...)
-}
-par(mfrow = c(1, 2))
-mycorplot(cvdat, 'Measured', valid_vec)
-mycorplot(cvdat, 'Estimate', cvparcols)
-
-```
-
-In all cases, covariance between traits is comparable or stronger in the measured values than in the spectral inversion estimates.
-Note that these results may not be completely reliable because the spectral estimates have no missing values (though they are filtered to the samples that have at least one trait measurement) whereas the trait data do.
-
 ## Sources of trait variability 
 
-_NOTE: All of the results in this section assume that the values above are accurate.
-They may change if I revise the model used to estimate spectra._
+```{r setup-methods, echo = FALSE, message = FALSE, warning = FALSE}
+library(pta)
+library(knitr)
+opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+data(global_vars)
+```
 
 ### Correlations among PROSPECT traits
 
-```{r pcaall, fig.cap = pcaall_cap, eval = FALSE}
+```{r princomp, fig.cap = princompcap, fig.width = 10}
 
-pcaall_cap <- paste('Principal component analysis on all PROSPECT traits')
+princompcap <- paste('Principal component analysis on all PROSPECT traits')
 
-pca_pars <- paste('mu', params, mod, sep = '_')
-names(pca_pars) <- params
-
-pcaall_dat <- gg_valid %>%
-    rename_(.dots = pca_pars) %>%
-    #mutate_at(params, log) %>%
-    filter_(sprintf('!is.na(%s)', params))
-
-draw_pca <- function(dat, char) {
-    fit <- princomp(dat %>% select_(.dots = params), cor = TRUE)
-    biplot(fit, xlabs = rep(char, nrow(dat)))
+mypca <- function(dat, char, ...) {
+    dat %>% 
+        select_(.dots = longpar_names) %>% 
+        princomp(cor = TRUE) %>% 
+        biplot(xlabs = rep(char, nrow(dat)), ...)
 }
 
-draw_pca(pcaall_dat, '.')
-
-```
-
-```{r pcasp, fig.cap = pcasp_cap, eval = FALSE}
-
-pcasp_cap <- paste('Principal components analysis on species means.')
-pcasp_dat <- pcaall_dat %>%
-    group_by(speciescode) %>%
-    summarize_at(params, mean)
-draw_pca(pcasp_dat, 'x')
-
-```
-
-```{r pcares, fig.cap = pcares_cap, eval = FALSE}
-
-pcares_cap <- paste('Principal components analysis on residuals',
-                    'from species means')
-pcares_dat <- pcaall_dat %>%
-    group_by(speciescode) %>%
-    mutate_at(params, (function(.) . - mean(.))) %>%
-    ungroup
-draw_pca(pcares_dat, '.')
+par(mfrow = c(1, 3))
+mypca(results_wide, '.', main = 'All data')
+mypca(results_wide_bysp, 'x', main = 'Species means')
+mypca(results_wide_resid, '.', main = 'Species mean residuals')
 
 ```
 

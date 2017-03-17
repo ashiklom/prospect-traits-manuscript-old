@@ -1,0 +1,203 @@
+# Results
+
+```{r setup-methods, echo = FALSE, message = FALSE, warning = FALSE}
+library(pta)
+library(knitr)
+opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+data(global_vars)
+```
+
+## RTM inversion / Methodological considerations
+
+```{r densfig, fig.cap = sumstatfigcap}
+sumstatfigcap <- paste('Histograms of inversion results by model and parameter')
+
+data(results_all)
+rsub <- results_all %>% 
+    filter(parameter %in% params) %>%
+    select(samplecode, modelname, parameter, parametermean) %>%
+    collect(n = Inf) %>%
+    mutate(parameter = factor(parameter, params))
+gpsub <- ggplot(rsub) + aes(x = parametermean, y = ..ncount..) + 
+    facet_grid(modelname ~ parameter, scales = 'free_x') + 
+    geom_area(stat = 'bin') + 
+    theme_bw() + 
+    theme(axis.text = element_text(size = rel(0.6))) + 
+    xlab('Spectral inversion estimate of mean') + 
+    ylab('Normalized density')
+plot(gpsub)
+ggsave(filename = 'figures/summary_density.png',
+       plot = gpsub,
+       device = 'png',
+       width = 8, 
+       height = 5)
+
+rsub %>%
+    group_by(modelname, parameter) %>%
+    summarize(stat = sprintf('%s (%s)',
+                             signif(mean(parametermean, na.rm = TRUE), 3),
+                             signif(sd(parametermean, na.rm = TRUE), 3))) %>%
+    spread(parameter, stat) %>%
+    kable(caption = 'Summary statistics by parameter and model')
+
+```
+
+In general, none of the distributions of the means look extreme, and for the most part, they all have the same general shape. 
+
+```{r validation, fig.cap = valid_cap}
+
+valid_cap <- paste('Comparison of spectral trait estimates with',
+                   'direct measurements. ')
+
+data(traits_valid_long)
+valid1 <- ggplot(traits_valid_long %>% 
+       # Plot only the best-fitting 90% of data
+       group_by(parameter) %>%
+       mutate(asr = abs(scaledresid),
+              good = asr < quantile(asr, 0.9)) %>%
+       filter(good)) +
+    aes(x = parametermean, 
+        xmin = parametermean - parametersd, 
+        xmax = parametermean + parametersd,
+        y = traitvalue, 
+        color = projectcode) +
+    facet_wrap(~ leaf_type + parameter, scales = 'free', dir = 'h', ncol = 4) +
+    geom_errorbarh(color = 'grey', alpha = 0.4) + 
+    geom_point(alpha = 0.3, size = 0.3)  + 
+    geom_smooth(method = 'lm', se = FALSE) + 
+    geom_abline(linetype = 'dashed') + 
+    scale_color_brewer(palette = 'Dark2') +
+    xlab('Spectral inversion estimate') +
+    ylab('Measured trait value') + 
+    guides(color = guide_legend(title = 'Project')) + 
+    theme_bw() + 
+    theme(legend.position = 'bottom',
+          axis.text = element_text(size = rel(0.5)))
+
+# For shading the middle region of the histograms
+dummy <- tribble(
+    ~xx, ~region,
+    -0.1, 0,
+    0.1, 0,
+    -0.25, 1,
+    0.25, 1,
+    -0.5, 2,
+    0.5, 2,
+    -1, 3,
+    1, 3)
+
+valid2 <- ggplot(traits_valid_long) +
+    aes(x = scaledresid, y = ..ncount.., color = projectcode) + 
+    geom_area(data = dummy, 
+                aes(x = xx, y = 1, fill = region, group = region),
+                alpha = 0.2,
+                inherit.aes = FALSE) + 
+    geom_freqpoly(size = 1.25) +
+    geom_vline(xintercept = 0, linetype = 'dashed', color = 'black', size = 1.25) +
+    facet_grid(leaf_type ~ parameter, scales = 'free_x') + 
+    scale_color_brewer(palette = 'Dark2') + 
+    guides(fill = FALSE, color = FALSE) + 
+    xlab('Scaled residual ((Estimate - Observed) / mean(Observed))') +
+    ylab('Normalized density') +
+    theme_bw()
+
+valid.plt <- gridExtra::grid.arrange(
+                gridExtra::arrangeGrob(valid1, valid2, ncol = 1, 
+                                       heights = c(1.3, 1))
+                )
+
+plot(valid.plt)
+
+ggsave(filename = 'figures/validation.png',
+       plot = valid.plt,
+       height = 8)
+
+```
+
+There is an additive conifer bias. 
+Beyond that, there seem to be issues with the Yang phenology and Wu Brazil datasets.
+
+```{r variancecompare, fig.cap=vccap, eval = FALSE}
+
+vccap <- 'Comparison of distributions between spectral estimates and direct measurements.'
+
+# Substitute missing values to make sure the comparison is fair
+traits_valid_variance <- traits_valid_long %>% 
+    mutate(parametermean = if_else(is.na(traitvalue) & parameter == 'Cab' & trait == 'leaf_chltot_per_area', NA_real_, parametermean),
+           parametermean = if_else(is.na(traitvalue) & parameter == 'Car' & trait == 'leaf_cartot_per_area', NA_real_, parametermean),
+           parametermean = if_else(is.na(traitvalue) & parameter == 'Cw' & trait == 'leaf_water_thickness', NA_real_, parametermean),
+           parametermean = if_else(is.na(traitvalue) & parameter == 'Cm' & trait == 'leaf_mass_per_area', NA_real_, parametermean))
+
+plt <- traits_valid_variance %>% 
+    ggplot() + 
+    geom_freqpoly(aes(x = traitvalue, y = ..ncount.., 
+                      color = 'Measurement'), size = 2) +
+    geom_freqpoly(aes(x = parametermean, y = ..ncount.., 
+                      color = 'Estimate'), size = 2) + 
+    facet_wrap(~parameter + trait, scales = 'free_x') + 
+    xlab('Trait value') + 
+    ylab('Normalized density') +
+    scale_color_brewer(palette = 'Set1') +
+    guides(color = guide_legend(title = NULL)) +
+    theme_bw()
+plot(plt)
+ggsave(filename = 'figures/distribution_comparison.png',
+       plot = plt)
+
+```
+
+In all cases, the measured values had a higher variance than estimates from spectral inversion. 
+The largest difference in variance between measured values and spectral estimates was for carotenoid and dry matter contents, while variance was closest for chlorophyll content.
+It should be noted that this comparison only applies to spectral values which have associated trait measurements -- i.e. the actual variance for all traits estimated from spectra may be considerably different.
+
+```{r covariancecompare, fig.cap = cvccap, eval = FALSE}
+cvccap <- paste('Comparison of covariance between spectral estimates ', 
+                'and direct measurements')
+
+data(traits_wide)
+
+traits_covar_filter <- traits_wide %>% 
+    rename(Cab = mean_Cab_5B, Car = mean_Car_5B, 
+           Cw = mean_Cw_5B, Cm = mean_Cm_5B) %>% 
+    mutate(Cab = if_else(is.na(leaf_chltot_per_area), NA_real_, Cab),
+           Car = if_else(is.na(leaf_cartot_per_area), NA_real_, Car),
+           Cw = if_else(is.na(leaf_water_thickness), NA_real_, Cw),
+           Cm = if_else(is.na(leaf_mass_per_area), NA_real_, Cm))
+
+my_covar <- function(.data, ...) {
+    cols <- colorRampPalette(c('red', 'grey30', 'blue'))(20)
+    .data %>% 
+        as.matrix() %>% 
+        cor(use = 'pairwise.complete.obs') %>% 
+        corrplot::corrplot.mixed(lower = 'ellipse', 
+                                 upper = 'number', 
+                                 mar = c(0, 0, 1, 0), 
+                                 col = cols,
+                                 cl.length = 5,
+                                 cl.ratio = 0.3,
+                                 ...)
+}
+
+for (i in 1:2) {
+    if (i == 2) {
+        png(filename = 'figures/covariance_comparison.png',
+            width = 7, height = 3, units = 'in', res = 300)
+    }
+    opt <- par(mfrow = c(1, 2))
+    traits_covar_filter %>% 
+        select(Cab = leaf_chltot_per_area,
+               Car = leaf_cartot_per_area,
+               Cw = leaf_water_thickness,
+               Cm = leaf_mass_per_area) %>%
+        my_covar(main = 'Measured')
+    traits_covar_filter %>% 
+        select(Cab, Car, Cw, Cm) %>% 
+        my_covar(main = 'Estimate')
+    dev.off()
+}
+
+```
+
+In all cases, covariance between traits is comparable or stronger in the measured values than in the spectral inversion estimates.
+This is largely due to disparities between PROSPECT estimates and measured values at larger trait values, indicating that spectral estimates are prone to saturation (\ref{fig:morecovariance}).
+

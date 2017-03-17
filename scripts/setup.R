@@ -21,6 +21,7 @@ is_unique <- function(...) {
 params <- c('N', 'Cab', 'Car', 'Cbrown', 'Cw', 'Cm')
 nparam <- length(params)
 models <- c('PROSPECT 4', 'PROSPECT 5', 'PROSPECT 5B')
+save(params, nparam, models, file = 'data/global_vars.RData')
 
 ############################################################
 # Load spectra and results databases
