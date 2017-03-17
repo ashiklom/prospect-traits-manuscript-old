@@ -1,10 +1,11 @@
 Package: pta
 Title: PROSPECT trait analysis
 Version: 0.0.1
-Imports: 
+Depends:
     methods,
+    tidyverse
+Imports: 
     bookdown, 
-    tidyverse,
     RSQLite,
     PEcAnRTM,
     data.table,

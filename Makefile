@@ -1,4 +1,10 @@
+.PHONY: all build deploy pkg
+
 all: build deploy
+
+pkg:
+	Rscript -e 'devtools::document(".")'
+	Rscript -e 'devtools::install(".")'
 
 build: extdata/results.db data/siteinfo.RData
 	./_build.sh
@@ -19,3 +25,5 @@ extdata/temperature_matrix.rds extdata/precipitation_matrix.rds:
 	Rscript scripts/get_climate_matrices.R
 
 ## Results data ready for analysis
+data/results_all.RData: scripts/setup.R extdata/results.db
+	Rscript scripts/setup.R

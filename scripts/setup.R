@@ -1,3 +1,7 @@
+############################################################
+# Script for preparing data for PROSPECT trait analysis (pta) package
+# Author: Alexey Shiklomanov
+############################################################
 library(methods)
 library(magrittr)
 library(tidyverse)
@@ -15,17 +19,24 @@ is_unique <- function(...) {
 
 # Useful global definitions
 params <- c('N', 'Cab', 'Car', 'Cbrown', 'Cw', 'Cm')
-npar <- length(params)
+nparam <- length(params)
 models <- c('PROSPECT 4', 'PROSPECT 5', 'PROSPECT 5B')
 
+############################################################
 # Load spectra and results databases
+############################################################
 specdb <- src_sqlite('extdata/leaf_spectra.db')
-results_raw <- src_sqlite('extdata/results.db') %>% 
+results_raw_long <- src_sqlite('extdata/results.db') %>% 
     tbl('results') %>% 
     select(-resultid) %>% 
-    collect(n = Inf)
+    collect(n = Inf) %>% 
+    mutate(modelname = factor(modelname, models),
+           parameter = factor(parameter, c(params, 'deviance', 'neff', 'residual'))) %>% 
+    verify(is_unique(samplecode, modelname, parameter))
 
+############################################################
 # Information on spectra, subsetted to only spectra that have results
+############################################################
 spectra_info_raw <- tbl(specdb, 'samples') %>% 
     select(-sampleid) %>% 
     semi_join(tbl(specdb, 'spectra_info') %>% 
@@ -37,19 +48,21 @@ spectra_info_raw <- tbl(specdb, 'samples') %>%
     left_join(tbl(specdb, 'plots')) %>%
     left_join(tbl(specdb, 'sites')) %>%
     collect(n = Inf) %>% 
-    semi_join(results_raw) %>% 
+    semi_join(results_raw_long) %>% 
     group_by(samplecode, condition) %>%
     filter(row_number() == 1) %>%
     ungroup %>% 
     verify(is_unique(samplecode, condition)) %>% 
     spread(condition, conditionvalue) %>%
-    select(-`<NA>`)
+    select(-`<NA>`) %>% 
+    verify(is_unique(samplecode))
 
 sun_projects <- c('ngee_tropics', 'ngee_arctic', 'lopex', 'angers', 'accp')
 
 # Set up factor levels
 spectra_info <- spectra_info_raw %>% 
     mutate(collectiondate = parse_date(collectiondate),
+           month = lubridate::month(collectiondate),
            sunshade = case_when(!is.na(.$sunshade) ~ .$sunshade,
                                 is.na(.$CanopyPosition) & 
                                     .$projectcode %in% sun_projects ~ 'sun',
@@ -84,32 +97,48 @@ spectra_info <- spectra_info_raw %>%
                                             'non-woody' = c('graminoid', 'herb',
                                                             'lichen', 'vine')),
            shade_tolerance = factor(shade_tolerance) %>% 
-               fct_relevel('tolerant', 'intermediate', 'intolerant'))
-
+               fct_relevel('tolerant', 'intermediate', 'intolerant')) %>% 
+    verify(is_unique(samplecode))
 save(spectra_info, file = 'data/spectra_info.RData')
 
-nsamples <- tbl(specdb, 'samples') %>% count %>% collect %>% .[['n']]
+nsamples <- spectra_info %>% count %>% collect %>% .[['n']]
 
-results_all <- spectra_info %>% 
-    left_join(results_raw) %>%
-    verify(is_unique(samplecode, modelname, parameter)) %>%
-    mutate(modelname = factor(modelname, models),
-           parameter = factor(parameter, c(params, 'deviance', 'neff', 'residual')))
+############################################################
+# Process results
+############################################################
 
-save(results_all, file = 'data/results_all.RData')
+results_all_long <- spectra_info %>% 
+    left_join(results_raw_long) %>%
+    verify(is_unique(samplecode, modelname, parameter))
+save(results_all_long, file = 'data/results_all_long.RData')
 
-results <- results_all %>% filter(modelname == 'PROSPECT 5B')
+value_suffix <- c('mean', 'sd', 'q025', 'q500', 'q975')
+value_vars <- paste0('parameter', value_suffix)
+names(value_vars) <- value_suffix
+model_shorten <- function(modelname) gsub('PROSPECT ', '', modelname)
 
-results_wide <- results %>% 
-    select(-resultid) %>% 
+results_all_wide <- results_raw_long %>% 
+    rename_(.dots = value_vars) %>% 
+    mutate(modelname = fct_relabel(modelname, model_shorten)) %>% 
     data.table::setDT(.) %>% 
-    data.table::dcast(... ~ parameter, value.var = value_vars) %>% 
-    as_data_frame()
+    data.table::dcast(... ~ parameter + modelname, value.var = value_suffix) %>% 
+    as_data_frame() %>% 
+    left_join(spectra_info) %>% 
+    verify(is_unique(samplecode))
+save(results_all_wide, file = 'data/results_all_wide.RData')
+
+results_long <- results_all_long %>% 
+    filter(modelname == 'PROSPECT 5B')
+save(results_long, file = 'data/results_long.RData')
+
+results_wide <- results_all_wide %>%
+    select(-matches('_(4|5)$'))
+save(results_wide, file = 'data/results_wide.RData')
 
 # averaged by species
 results_wide_bysp <- results_wide %>% 
     group_by(speciescode) %>% 
-    summarize_at(vars(starts_with('parametermean'),
+    summarize_at(vars(starts_with('mean'),
                       -matches('deviance|residual|neff')),
                  mean) %>% 
     ungroup()
@@ -117,47 +146,77 @@ results_wide_bysp <- results_wide %>%
 # Residuals on parametermeans
 results_wide_resid <- results_wide %>% 
     group_by(speciescode) %>% 
-    mutate_at(vars(starts_with('parametermean')), function(x) x - mean(x)) %>% 
+    mutate_at(vars(starts_with('mean')), function(x) x - mean(x)) %>% 
     ungroup()
 
-# Convenience vector for easy select_ and rename_ calls
-longpar_names <- paste0('parametermean_', params)
-names(longpar_names) <- params
+save(results_wide_bysp, results_wide_resid, file = 'data/results_byspecies.RData')
 
-convert2si <- function(value, parameter) {
-    case_when(parameter %in% c('Cab', 'Car') ~ 
-                udunits2::ud.convert(value, 'ug cm-2', 'kg m-2'),
-              parameter %in% c('Cw', 'Cm') ~ 
-                udunits2::ud.convert(value, 'g cm-2', 'kg m-2'),
-              TRUE ~ NA_real_)
+############################################################
+# Process traits
+############################################################
+
+convert_units <- function(value, trait) {
+    case_when(grepl('(chl|car).*_per_area', trait) ~
+                udunits2::ud.convert(value, 'kg m-2', 'ug cm-2'),
+              grepl('(water_thickness|mass_per_area)', trait) ~ 
+                udunits2::ud.convert(value, 'kg m-2', 'g cm-2'),
+              TRUE ~ value)
 }
 
-traits_all <- results_all %>%
-    inner_join(tbl(specdb, 'trait_data') %>% 
-               filter(samplecode != 'nasa_fft|PB02_ABBA_TN|2008') %>%
-               collect(n = Inf)) %>% 
-    mutate_at(vars(matches('parameter[[:alpha:]]+')),
-              convert2si, parameter = .$parameter)
+traits_raw_long <- tbl(specdb, 'trait_data') %>% 
+    select(samplecode, trait, traitvalue) %>% 
+    filter(samplecode != 'nasa_fft|PB02_ABBA_TN|2008') %>% 
+    collect(n = Inf) %>% 
+    mutate(trait = factor(trait),
+           traitvalue = convert_units(traitvalue, trait)) %>% 
+    ## TODO: Fix this in curated leafspec post-processing
+    group_by(samplecode, trait) %>% 
+    summarize(traitvalue = mean(traitvalue, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    verify(is_unique(samplecode, trait))
 
-save(traits_all, file = 'data/traits_all.RData')
+traits_raw_wide <- traits_raw_long %>% 
+    spread(trait, traitvalue)
 
-# Filter down to PROSPECT 5B, which will be used from now on
-traits <- traits_all %>% filter(modelname == 'PROSPECT 5B')
+traits_all_long <- results_all_long %>% 
+    inner_join(traits_raw_long) %>% 
+    verify(is_unique(samplecode, modelname, parameter, trait))
+save(traits_all_long, file = 'data/traits_all_long.RData')
 
-valid_dat <- traits %>%
+traits_all_wide <- results_all_wide %>% 
+    inner_join(traits_raw_wide) %>% 
+    verify(is_unique(samplecode))
+save(traits_all_wide, file = 'data/traits_all_wide.RData')
+
+traits_long <- results_long %>% 
+    inner_join(traits_raw_long) %>% 
+    verify(is_unique(samplecode, parameter, trait))
+save(traits_long, file = 'data/traits_long.RData')
+
+traits_wide <- results_wide %>% 
+    inner_join(traits_raw_wide) %>% 
+    verify(is_unique(samplecode))
+save(traits_wide, file = 'data/traits_wide.RData')
+
+traits_all_valid_long <- traits_all_long %>% 
     filter((parameter == 'Cab' & trait == 'leaf_chltot_per_area') |
            (parameter == 'Car' & trait == 'leaf_cartot_per_area') |
            (parameter == 'Cw' & trait == 'leaf_water_thickness') |
-           (parameter == 'Cm' & trait == 'leaf_mass_per_area')) %>%
-    group_by(parameter) %>%
-    mutate(month = lubridate::month(collectiondate),
-           resid = parametermean - traitvalue,
+           (parameter == 'Cm' & trait == 'leaf_mass_per_area')) %>% 
+    group_by(parameter, modelname) %>% 
+    mutate(resid = parametermean - traitvalue,
            normresid = resid / traitvalue,
-           scaledresid = resid / mean(traitvalue)) %>%
-    ungroup()
+           scaledresid = resid / mean(traitvalue)) %>% 
+    ungroup() %>% 
+    verify(is_unique(samplecode, modelname, parameter, trait))
+save(traits_all_valid_long, file = 'data/traits_all_valid_long.RData')
+
+traits_valid_long <- traits_all_valid_long %>% 
+    filter(modelname == 'PROSPECT 5B') %>% 
+    verify(is_unique(samplecode, parameter, trait))
+save(traits_valid_long, file = 'data/traits_valid_long.RData')
 
 # Results in wide form (one row per inversion)
-value_vars <- paste0('parameter', c('mean', 'sd', 'q025', 'q500', 'q975'))
 
 ## Comparison of PROSPECT models
 ##modcodes <- c('PROSPECT 4' = 'p4', 'PROSPECT 5' = 'p5', 'PROSPECT 5B' = 'p5b')
