@@ -1,32 +1,34 @@
 # Methods
 
+```{r setup-methods, echo = FALSE, message = FALSE, warning = FALSE}
+library(pta)
+library(knitr)
+
+opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+specdb <- src_sqlite('extdata/leaf_spectra.db')
+```
+
 ## Data
 
-Data for this analysis comes from several different projects, reported in \ref(projecttable).
+Data for this analysis comes from several different projects, reported in Table \ref(projecttable).
 
 ```{r projecttable}
 
-spectra_samples <- tbl(specdb, 'samples') %>%
-    inner_join(tbl(specdb, 'spectra_info') %>% 
-               filter(spectratype != 'transmittance')) %>%
-    left_join(tbl(specdb, 'plots')) %>%
-    left_join(tbl(specdb, 'sites')) %>%
-    left_join(tbl(specdb, 'projects'))
+data(spectra_info)
 
-byproject <- spectra_samples %>%
+byproject <- spectra_info %>%
     group_by(projectcode, projectdescription) %>%
     summarize(sites = n_distinct(sitecode),
               species = n_distinct(speciescode),
               samples = n_distinct(samplecode)) %>%
-    arrange(desc(samples)) %>%
-    collect
+    arrange(desc(samples))
 
-totals <- spectra_samples %>%
+totals <- spectra_info %>%
     summarize(sites = n_distinct(sitecode),
               species = n_distinct(speciescode),
               samples = n_distinct(samplecode)) %>%
-    mutate(projectcode = '', projectdescription = 'Total') %>% 
-    collect
+    mutate(projectcode = '', projectdescription = 'Total')
 
 projecttable <- bind_rows(byproject, totals) %>%
     rename(code = projectcode,
@@ -34,10 +36,6 @@ projecttable <- bind_rows(byproject, totals) %>%
            '# sites' = sites, 
            '# species' = species,
            '# spectra' = samples)
-
-#pander::pandoc.table(projecttable, 
-                     #emphasize.strong.rows = nrow(projecttable),
-                     #set.caption = 'Project information')
 
 kable(projecttable, caption = 'Project information')
 
@@ -47,65 +45,54 @@ kable(projecttable, caption = 'Project information')
 
 sitemap_cap <- paste('Sample distribution in geographic and climate space')
 
-site_info <- readRDS('site_info.rds')
-biomes <- read_csv('scripts/biomes.csv') %>%
-    mutate(temp = x, prec = y * 10)
+data(site_info)
 
-sitemap_dat <- spectra_samples %>%
-    collect %>%
+sitemap_dat <- spectra_info %>%
     left_join(site_info) %>%
     count(sitecode, site_lat, site_lon, temp, prec, projectcode) %>%
     ungroup() %>%
     group_by(projectcode) %>%
     mutate(nproj = sum(n)) %>%
     ungroup() %>%
-    mutate(projectcode = forcats::fct_reorder(projectcode, nproj))
+    mutate(projectcode = forcats::fct_reorder(projectcode, nproj)) %>% 
+    arrange(desc(nproj))
 
-x_lims <- round(range(sitemap_dat$site_lon, na.rm = TRUE))
-y_lims <- round(range(sitemap_dat$site_lat, na.rm = TRUE))
-
-ggplot(sitemap_dat) + 
-    aes(x = site_lon, y = site_lat, size = n, fill = projectcode) +
-    borders('world', xlim = x_lims, ylim = y_lims) +
+plt <- ggplot(sitemap_dat) + 
+    aes(x = site_lon, y = site_lat, fill = projectcode, size = nproj) +
+    borders('world') +
     geom_point(pch = 21, color = 'black') + 
     scale_fill_brewer(palette = 'Paired') + 
-    theme_bw()
+    theme_bw() +
+    theme(axis.title.x = element_blank(),
+          axis.title.y = element_blank()) + 
+    guides(size = FALSE,
+           fill = guide_legend(title = 'Project', 
+                               override.aes = list(size = 4)))
+plot(plt)
+ggsave(filename = 'figures/sitemap.png', 
+       plot = plt, 
+       device = 'png',
+       scale = 0.5)
 
-biome_colors <- c("Subtropical desert" = "navajowhite3",
-                  'Temperate grassland desert' = "darkgoldenrod1",
-                  'Woodland shrubland' = "sienna",
-                  'Temperate forest' = "darkolivegreen4",
-                  'Boreal forest' = "darkseagreen3",
-                  'Temperate rain forest' = "forestgreen",
-                  'Tropical rain forest' = "darkgreen",
-                  'Tropical forest savanna' = "olivedrab",
-                  'Tundra' = "gray")
-
-#biome_labs <- biomes %>%
-    #group_by(biome) %>%
-    #summarize(x = mean(prec), y = mean(temp)) 
-
-biome_labs <- tribble(
-    ~biome, ~x, ~y,
-    'Boreal forest', 99.4, -0.417,
-    'Subtropical desert', 42.78, 23.87,
-    'Temperate forest', 160, 10,
-    'Temperate grassland desert', 16.64, 6.86,
-    'Temperate rain forest', 236, 12.5,
-    'Tropical rain forest', 340, 24,
-    'Tropical forest savanna', 150.53, 22.53,
-    'Tundra', 20, -10,
-    'Woodland shrubland', 85, 16)
 plt <- ggplot() + 
     aes(x = prec, y = temp) +
-    geom_polygon(data = biomes, aes(fill = biome), size = 2, alpha = 0.2) + 
+    xlab('Mean annual precipitation (mm)') +
+    ylab(expression(paste('Mean annual temperature (', degree, 'C)'))) +
+    geom_polygon(data = biomes, aes(fill = biome), 
+                 size = 0.5, alpha = 0.2, color = 'black') + 
     geom_point(data = sitemap_dat, aes(size = n, color = projectcode)) + 
-    geom_label(data = biome_labs, 
-                             aes(x = x, y = y, label = biome)) + 
+    geom_label(data = biome_labs, aes(x = x, y = y, label = biome)) + 
     scale_fill_manual(values = biome_colors) + 
-    scale_color_brewer(palette = 'Paired')
+    scale_color_brewer(palette = 'Paired') +
+    theme_bw() +
+    guides(fill = FALSE,
+           color = guide_legend(title = 'Project', 
+                                override.aes = list(size = 4)))
 plot(plt)
-#plotly::ggplotly(plt)
+ggsave(filename = 'figures/biomes.png',
+       plot = plt,
+       device = 'png',
+       scale = 0.5)
 
 ```
 

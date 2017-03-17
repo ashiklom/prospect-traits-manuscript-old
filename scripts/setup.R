@@ -47,6 +47,7 @@ spectra_info_raw <- tbl(specdb, 'samples') %>%
     left_join(tbl(specdb, 'species_attributes')) %>%
     left_join(tbl(specdb, 'plots')) %>%
     left_join(tbl(specdb, 'sites')) %>%
+    left_join(tbl(specdb, 'projects')) %>% 
     collect(n = Inf) %>% 
     semi_join(results_raw_long) %>% 
     group_by(samplecode, condition) %>%
