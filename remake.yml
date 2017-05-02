@@ -1,0 +1,67 @@
+packages:
+    - tidyverse
+    - methods
+    - riri
+    - lubridate
+
+sources: R
+
+#targets:
+    #all:
+        #depends: figures
+
+    #figures:
+        #depends:
+            #- figures/biomes.pdf
+            ##- figures/sitemap.pdf
+            ##- figures/site_biome.pdf
+targets:
+    all:
+        depends:
+            - figures
+
+    figures: 
+        depends:
+            - figures/biomes.pdf
+            - figures/sitemap.pdf
+            - figures/site_biome.pdf
+
+    figures/biomes.pdf:
+        command: fig.biomes(site_sample_counts, site_clim_means, biome_polygons, biome_labels)
+        plot: true
+
+    figures/sitemap.pdf:
+        command: fig.sitemap(site_coords)
+        plot: true
+
+    figures/site_biome.pdf:
+        command: fig.site_biome(site_sample_counts, site_clim_means, biome_polygons, biome_labels)
+        plot: true
+    
+    biome_polygons:
+        command: read_csv('data/biome_polygons.csv')
+
+    biome_labels:
+        command: read_csv('data/biome_labels.csv')
+
+    site_sample_counts:
+        command: dat.site_sample_counts(results_samples, specdb_path)
+
+    site_clim_means:
+        command: dat.site_clim_means(site_clim_full)
+
+    site_clim_full:
+        command: dat.site_clim_full(site_coords)
+
+    site_coords:
+        command: dat.site_coords(specdb_path)
+
+    results_samples:
+        command: dat.results_samples(specdb_path, resultsdb_path)
+
+    specdb_path:
+        command: c('extdata/leaf_spectra.db')
+
+    resultsdb_path:
+        command: c('extdata/results.db')
+
