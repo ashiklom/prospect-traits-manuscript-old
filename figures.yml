@@ -1,0 +1,30 @@
+targets:
+  figures: 
+      depends:
+          - figures/biomes.pdf
+          - figures/sitemap.pdf
+          - figures/site_biome.pdf
+          - results_long
+          - spectra_info
+          #- figures/validation_points.pdf
+          #- figures/validation_summary.pdf
+
+  #figures/validation_points.pdf:
+      #command: fig.validation_points(results_long)
+      #plot: true
+
+  #figures/validation_summary.pdf:
+      #command: fig.validation_summary(results_long)
+      #plot: true
+
+  figures/biomes.pdf:
+      command: fig.biomes(site_sample_counts, site_clim_means, biome_polygons, biome_labels)
+      plot: true
+
+  figures/sitemap.pdf:
+      command: fig.sitemap(site_coords)
+      plot: true
+
+  figures/site_biome.pdf:
+      command: fig.site_biome(site_sample_counts, site_clim_means, biome_polygons, biome_labels)
+      plot: true

@@ -1,0 +1,6 @@
+targets:
+  specdb_path:
+      command: c('extdata/leaf_spectra.db')
+
+  resultsdb_path:
+      command: c('extdata/results.db')

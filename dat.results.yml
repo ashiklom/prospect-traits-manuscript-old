@@ -1,0 +1,22 @@
+targets:
+    results_wide_bysp:
+        command: dat.results_bysp(results_wide)
+
+    results_wide_residual:
+        command: dat.results_species_residuals(results_wide)
+
+    results_wide:
+        command: dat.filter_results(results_all_wide, usemodel)
+
+    results_long:
+        command: dat.filter_results(results_all_long, usemodel)
+
+    results_all_wide:
+        command: dat.results_all_wide()
+
+    results_all_long:
+        command: dplyr::left_join(spectra_info, results_raw_long)
+
+    results_raw_long:
+        command: dat.results_raw_long(specdb_path, resultsdb_path)
+

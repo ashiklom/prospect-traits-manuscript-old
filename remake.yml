@@ -1,80 +1,47 @@
 packages:
-    - tidyverse
-    - methods
-    - riri
-    - lubridate
-    - assertr
-    - forcats
+  - tidyverse
+  - methods
+  - riri
+  - lubridate
+  - assertr
+  - forcats
 
 sources: R
 
+include:
+  - dat.results.yml
+  - dat.traits.yml
+  - paths.yml
+  - figures.yml
+
 targets:
-    all:
-        depends:
-            - figures
+  all:
+    depends:
+        - figures
 
-    figures: 
-        depends:
-            - figures/biomes.pdf
-            - figures/sitemap.pdf
-            - figures/site_biome.pdf
-            - results_long
-            - spectra_info
-            #- figures/validation_points.pdf
-            #- figures/validation_summary.pdf
+  usemodel:
+    command: c('PROSPECT 5B')
 
-    #figures/validation_points.pdf:
-        #command: fig.validation_points(results_long)
-        #plot: true
+  biome_polygons:
+    command: readr::read_csv('data/biome_polygons.csv')
 
-    #figures/validation_summary.pdf:
-        #command: fig.validation_summary(results_long)
-        #plot: true
+  biome_labels:
+    command: readr::read_csv('data/biome_labels.csv')
 
-    results_long:
-        command: dplyr::filter_(results_raw_long, I('modelname == \"PROSPECT 5B\"'))
+  site_sample_counts:
+    command: dat.site_sample_counts(results_samples, specdb_path)
 
-    figures/biomes.pdf:
-        command: fig.biomes(site_sample_counts, site_clim_means, biome_polygons, biome_labels)
-        plot: true
+  site_clim_means:
+    command: dat.site_clim_means(site_clim_full)
 
-    figures/sitemap.pdf:
-        command: fig.sitemap(site_coords)
-        plot: true
+  site_clim_full:
+    command: dat.site_clim_full(site_coords)
 
-    figures/site_biome.pdf:
-        command: fig.site_biome(site_sample_counts, site_clim_means, biome_polygons, biome_labels)
-        plot: true
-    
-    biome_polygons:
-        command: readr::read_csv('data/biome_polygons.csv')
+  site_coords:
+    command: dat.site_coords(specdb_path)
 
-    biome_labels:
-        command: readr::read_csv('data/biome_labels.csv')
+  results_samples:
+    command: dat.results_samples(specdb_path, resultsdb_path)
 
-    site_sample_counts:
-        command: dat.site_sample_counts(results_samples, specdb_path)
-
-    site_clim_means:
-        command: dat.site_clim_means(site_clim_full)
-
-    site_clim_full:
-        command: dat.site_clim_full(site_coords)
-
-    site_coords:
-        command: dat.site_coords(specdb_path)
-
-    results_samples:
-        command: dat.results_samples(specdb_path, resultsdb_path)
-
-    spectra_info:
-        command: dat.spectra_info(specdb_path, results_long)
-
-    results_raw_long:
-        command: dat.results_long(specdb_path, resultsdb_path)
-
-    specdb_path:
-        command: c('extdata/leaf_spectra.db')
-
-    resultsdb_path:
-        command: c('extdata/results.db')
+  spectra_info:
+    command: dat.spectra_info(specdb_path, results_long)
