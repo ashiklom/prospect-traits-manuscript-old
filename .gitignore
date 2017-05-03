@@ -5,4 +5,7 @@ results.db
 results.sql
 leaf_spectra.db
 site_info.rds
-wc0.5/
+figures/
+.remake/
+.deprecated/
+extdata/

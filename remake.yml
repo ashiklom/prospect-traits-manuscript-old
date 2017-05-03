@@ -3,18 +3,11 @@ packages:
     - methods
     - riri
     - lubridate
+    - assertr
+    - forcats
 
 sources: R
 
-#targets:
-    #all:
-        #depends: figures
-
-    #figures:
-        #depends:
-            #- figures/biomes.pdf
-            ##- figures/sitemap.pdf
-            ##- figures/site_biome.pdf
 targets:
     all:
         depends:
@@ -25,6 +18,21 @@ targets:
             - figures/biomes.pdf
             - figures/sitemap.pdf
             - figures/site_biome.pdf
+            - results_long
+            - spectra_info
+            #- figures/validation_points.pdf
+            #- figures/validation_summary.pdf
+
+    #figures/validation_points.pdf:
+        #command: fig.validation_points(results_long)
+        #plot: true
+
+    #figures/validation_summary.pdf:
+        #command: fig.validation_summary(results_long)
+        #plot: true
+
+    results_long:
+        command: dplyr::filter_(results_raw_long, I('modelname == \"PROSPECT 5B\"'))
 
     figures/biomes.pdf:
         command: fig.biomes(site_sample_counts, site_clim_means, biome_polygons, biome_labels)
@@ -39,10 +47,10 @@ targets:
         plot: true
     
     biome_polygons:
-        command: read_csv('data/biome_polygons.csv')
+        command: readr::read_csv('data/biome_polygons.csv')
 
     biome_labels:
-        command: read_csv('data/biome_labels.csv')
+        command: readr::read_csv('data/biome_labels.csv')
 
     site_sample_counts:
         command: dat.site_sample_counts(results_samples, specdb_path)
@@ -59,9 +67,14 @@ targets:
     results_samples:
         command: dat.results_samples(specdb_path, resultsdb_path)
 
+    spectra_info:
+        command: dat.spectra_info(specdb_path, results_long)
+
+    results_raw_long:
+        command: dat.results_long(specdb_path, resultsdb_path)
+
     specdb_path:
         command: c('extdata/leaf_spectra.db')
 
     resultsdb_path:
         command: c('extdata/results.db')
-
