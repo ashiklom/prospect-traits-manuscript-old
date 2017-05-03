@@ -155,3 +155,73 @@ for (i in seq_along(valid_vec)) {
 
 ```
 
+```{r morecovariance, fig.cap = morecovariance_cap}
+
+morecovariance_cap <- 'More covariance'
+
+mes <- covar_join %>% 
+    select(Cab = leaf_chltot_per_area,
+           Car = leaf_cartot_per_area,
+           Cw = leaf_water_thickness,
+           Cm = leaf_mass_per_area) %>% 
+    mutate(color = 'black')
+
+est <- covar_join %>% 
+    select(Cab, Car, Cw, Cm) %>% 
+    mutate(Cab = udunits2::ud.convert(Cab, 'ug cm-2', 'kg m-2'),
+           Car = udunits2::ud.convert(Car, 'ug cm-2', 'kg m-2'),
+           Cw = udunits2::ud.convert(Cw, 'g cm-2', 'kg m-2'),
+           Cm = udunits2::ud.convert(Cm, 'g cm-2', 'kg m-2')) %>% 
+    mutate(color = 'red')
+
+est_mes <- bind_rows(est, mes)
+values <- est_mes[,-ncol(est_mes)]
+cols <- est_mes[['color']]
+pairs(values, col = cols, pch = 19)
+
+covar_join %>% 
+    select(Cab = leaf_chltot_per_area,
+           Car = leaf_cartot_per_area,
+           Cw = leaf_water_thickness,
+           Cm = leaf_mass_per_area) %>% 
+    pairs()
+
+covar_join %>% 
+    select(Cab, Car, Cw, Cm) %>% 
+    pairs()
+
+cab_car <- covar_join %>% 
+    transmute(cab_est = udunits2::ud.convert(Cab, 'ug cm-2', 'kg m-2'),
+              car_est = udunits2::ud.convert(Car, 'ug cm-2', 'kg m-2'),
+              cab_mes = leaf_chltot_per_area,
+              car_mes = leaf_cartot_per_area)
+
+plot(car_mes ~ cab_mes, data = cab_car, pch = 20, cex = 0.5)
+points(car_est ~ cab_est, data = cab_car, pch = 20, cex = 0.5, col = 'red')
+legend('topright', legend = c('measured', 'estimate'), pch = 20, col = c('black', 'red'))
+
+opt <- par(mfrow = c(1,2))
+cab_car_x <- c(0, 0.002)
+cab_car_y <- c(0, 0.00025)
+plot(car_mes ~ cab_mes, data = cab_car, pch = 20, cex = 0.5, main = 'Measure', xlim = cab_car_x, ylim = cab_car_y)
+plot(car_est ~ cab_est, data = cab_car, pch = 20, cex = 0.5, main = 'Estimate', xlim = cab_car_x, ylim = cab_car_y)
+
+cw_cm <- covar_join %>% 
+    transmute(cw_est = udunits2::ud.convert(Cw, 'g cm-2', 'kg m-2'),
+              cm_est = udunits2::ud.convert(Cm, 'g cm-2', 'kg m-2'),
+              cw_mes = leaf_water_thickness,
+              cm_mes = leaf_mass_per_area)
+
+par(opt)
+plot(cm_mes ~ cw_mes, data = cw_cm, pch = 20, cex = 0.5)
+points(cm_est ~ cw_est, data = cw_cm, pch = 20, cex = 0.5, col = 'red')
+legend('topright', legend = c('measured', 'estimate'), pch = 20, col = c('black', 'red'))
+
+cw_cm_x <- c(0, 0.5)
+cw_cm_y <- c(0, 0.35)
+
+opt <- par(mfrow = c(1,2))
+plot(cm_mes ~ cw_mes, data = cw_cm, pch = 20, cex = 0.5, main = 'Measure', xlim = cw_cm_x)
+plot(cm_est ~ cw_est, data = cw_cm, pch = 20, cex = 0.5, main = 'Estimate', xlim = cw_cm_y)
+
+```

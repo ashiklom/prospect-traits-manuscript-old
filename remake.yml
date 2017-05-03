@@ -11,6 +11,7 @@ sources: R
 include:
   - dat.results.yml
   - dat.traits.yml
+  - dat.site.yml
   - paths.yml
   - figures.yml
 
@@ -20,28 +21,7 @@ targets:
         - figures
 
   usemodel:
-    command: c('PROSPECT 5B')
-
-  biome_polygons:
-    command: readr::read_csv('data/biome_polygons.csv')
-
-  biome_labels:
-    command: readr::read_csv('data/biome_labels.csv')
-
-  site_sample_counts:
-    command: dat.site_sample_counts(results_samples, specdb_path)
-
-  site_clim_means:
-    command: dat.site_clim_means(site_clim_full)
-
-  site_clim_full:
-    command: dat.site_clim_full(site_coords)
-
-  site_coords:
-    command: dat.site_coords(specdb_path)
-
-  results_samples:
-    command: dat.results_samples(specdb_path, resultsdb_path)
+    command: c(I('PROSPECT 5B'))
 
   spectra_info:
-    command: dat.spectra_info(specdb_path, results_long)
+    command: dat.spectra_info(specdb_path, results_raw_long)

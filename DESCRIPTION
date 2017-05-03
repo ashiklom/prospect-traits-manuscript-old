@@ -11,7 +11,9 @@ Imports:
     data.table,
     lmodel2,
     udunits2,
-    corrplot
+    corrplot,
+    stringr,
+    runjags
 Remotes:
     github::ashiklom/pecan/modules/rtm
 RoxygenNote: 6.0.1

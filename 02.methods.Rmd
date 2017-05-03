@@ -13,26 +13,7 @@ Data for this analysis comes from several different projects, reported in Table 
 ```{r projecttable}
 
 data(spectra_info)
-
-byproject <- spectra_info %>%
-    group_by(projectcode, projectdescription) %>%
-    summarize(sites = n_distinct(sitecode),
-              species = n_distinct(speciescode),
-              samples = n_distinct(samplecode)) %>%
-    arrange(desc(samples))
-
-totals <- spectra_info %>%
-    summarize(sites = n_distinct(sitecode),
-              species = n_distinct(speciescode),
-              samples = n_distinct(samplecode)) %>%
-    mutate(projectcode = '', projectdescription = 'Total')
-
-projecttable <- bind_rows(byproject, totals) %>%
-    rename(code = projectcode,
-           Description = projectdescription,
-           '# sites' = sites, 
-           '# species' = species,
-           '# spectra' = samples)
+projecttable <- projecttable(spectra_info)
 
 kable(projecttable, caption = 'Project information')
 
@@ -54,26 +35,23 @@ sitemap_dat <- spectra_info %>%
     mutate(projectcode = forcats::fct_reorder(projectcode, nproj)) %>% 
     arrange(desc(nproj))
 
-plt <- ggplot(sitemap_dat) + 
-    aes(x = site_lon, y = site_lat, fill = projectcode, size = nproj) +
+sitemap <- ggplot(sitemap_dat) + 
+    aes(x = site_lon, y = site_lat, fill = projectcode) +
     borders('world') +
-    geom_point(pch = 21, color = 'black') + 
+    coord_cartesian(xlim = c(-180, 25), ylim = c(-15, 75)) +
+    geom_point(pch = 21, color = 'black', size = 2.5) + 
     scale_fill_brewer(palette = 'Paired') + 
     theme_bw() +
     theme(axis.title.x = element_blank(),
           axis.title.y = element_blank()) + 
-    guides(size = FALSE,
-           fill = guide_legend(title = 'Project', 
+    guides(fill = guide_legend(title = 'Project', 
                                override.aes = list(size = 4)))
-plot(plt)
-ggsave(filename = 'figures/sitemap.png', 
-       plot = plt, 
-       device = 'png',
-       scale = 0.5)
+plot(sitemap)
+ggsave(filename = 'figures/sitemap.png', plot = sitemap, width = 8, height = 4)
 
-plt <- ggplot() + 
+biomeplt <- ggplot() + 
     aes(x = prec, y = temp) +
-    xlab('Mean annual precipitation (mm)') +
+    xlab('Mean annual precipitation (cm)') +
     ylab(expression(paste('Mean annual temperature (', degree, 'C)'))) +
     geom_polygon(data = biomes, aes(fill = biome), 
                  size = 0.5, alpha = 0.2, color = 'black') + 
@@ -85,11 +63,18 @@ plt <- ggplot() +
     guides(fill = FALSE,
            color = guide_legend(title = 'Project', 
                                 override.aes = list(size = 4)))
-plot(plt)
-ggsave(filename = 'figures/biomes.png',
-       plot = plt,
-       device = 'png',
-       scale = 0.5)
+plot(biomeplt)
+ggsave(filename = 'figures/biomes.png', plot = biomeplt, width = 10, height = 6)
+
+site_biome <- 
+    gridExtra::grid.arrange(sitemap + theme(legend.position = 'bottom'),
+                            biomeplt + 
+                                theme(legend.position = 'bottom') + 
+                                guides(color = FALSE))
+plot(site_biome)
+ggsave(plot = site_biome, 
+       filename = 'figures/site_biome.png', width = 8, height = 11)
+
 
 ```
 

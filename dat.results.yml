@@ -15,7 +15,7 @@ targets:
         command: dat.results_all_wide()
 
     results_all_long:
-        command: dplyr::left_join(spectra_info, results_raw_long)
+        command: dat.results_all_long(results_raw_long, spectra_info)
 
     results_raw_long:
         command: dat.results_raw_long(specdb_path, resultsdb_path)

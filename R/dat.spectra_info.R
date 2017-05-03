@@ -1,7 +1,7 @@
 ############################################################
 # Information on spectra, subsetted to only spectra that have results
 ############################################################
-dat.spectra_info <- function(specdb_path, results_long) {
+dat.spectra_info <- function(specdb_path, results_raw_long) {
     library(tidyverse)
     specdb <- src_sqlite(specdb_path)
     spectra_info_raw <- tbl(specdb, 'samples') %>% 
@@ -15,7 +15,7 @@ dat.spectra_info <- function(specdb_path, results_long) {
         left_join(tbl(specdb, 'sites')) %>%
         left_join(tbl(specdb, 'projects')) %>% 
         collect(n = Inf) %>% 
-        semi_join(results_long) %>% 
+        semi_join(results_raw_long %>% distinct(samplecode)) %>% 
         group_by(samplecode, condition) %>%
         filter(row_number() == 1) %>%
         ungroup %>% 

@@ -1,6 +1,6 @@
 library(tidyverse)
 library(methods)
-specdb <- src_sqlite('leaf_spectra.db')
+specdb <- src_sqlite('extdata/leaf_spectra.db')
 
 sites <- tbl(specdb, 'sites') %>%
     left_join(tbl(specdb, 'plots')) %>%
@@ -13,7 +13,7 @@ sites <- tbl(specdb, 'sites') %>%
 coords <- sites %>%
     dplyr::select(site_lon, site_lat) %>%
     as.matrix() %>%
-    sp::SpatialPoints(proj4string = CRS('+proj=longlat +datum=WGS84'))
+    sp::SpatialPoints(proj4string = sp::CRS('+proj=longlat +datum=WGS84'))
 
 tempdat <- matrix(NA_real_, nrow(sites), 12)
 precdat <- tempdat

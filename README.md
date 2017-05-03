@@ -5,6 +5,12 @@ Authors:
 - Shawn Serbin
 - Michael Dietze
 
+## Data
+
+### Methods
+
+- 
+
 Repositories supporting this manuscript:
 - [Processing of spectral data](https://github.com/ashiklom/curated-leafspec)
 - [Running the inversions](https://github.com/ashiklom/prospectinversion)

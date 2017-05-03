@@ -9,7 +9,7 @@ fit_data <- results_long %>%
            species = factor(speciescode),
            project_species = interaction(project, species),
            species_site = interaction(sitecode, species),
-           species_site_sunshade = interaction(species_site, sunshade),
+           is_shaded = interaction(species_site, sunshade),
            pft = interaction(leaf_type, phenology, growth_form_simple)
            ) %>% 
     rename(woodiness = growth_form_simple)
@@ -27,7 +27,8 @@ lm2_vars <- c('woodiness' = 'black',
               'sunshade' = 'orange')
 
 lm2 <- freqlm(fit_data, names(lm2_vars), 
-              coef_exclude = c('species', 'species_site'))
+              coef_exclude = c('species', 'species_site'),
+              response = 'parametermean')
 
 lm2$coef_plot + 
     xlab('Attribute') +
@@ -35,9 +36,9 @@ lm2$coef_plot +
     theme_bw() + 
     theme(text = element_text(size = 15),
           axis.title = element_text(size = rel(1.5)),
-          axis.text = element_text(size = rel(1.2)),
+          axis.text = element_text(size = rel(1.1)),
           strip.text = element_text(size = rel(1.3)))
-ggsave('figures/lm_coefficients.png')
+ggsave('figures/lm_coefficients.png', width = 15, height = 10)
 
 lm2$variance_plot + 
     xlab('Parameter') + 

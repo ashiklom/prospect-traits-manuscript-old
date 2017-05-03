@@ -1,0 +1,19 @@
+targets:
+  site_sample_counts:
+    command: dat.site_sample_counts(spectra_info)
+
+  site_clim_means:
+    command: dat.site_clim_means(site_clim_full)
+
+  site_clim_full:
+    command: dat.site_clim_full(site_coords)
+
+  site_coords:
+    command: dat.site_coords(specdb_path)
+
+  biome_polygons:
+    command: readr::read_csv('data/biome_polygons.csv')
+
+  biome_labels:
+    command: readr::read_csv('data/biome_labels.csv')
+

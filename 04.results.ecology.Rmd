@@ -9,21 +9,33 @@ data(global_vars)
 
 ### Correlations among PROSPECT traits
 
-```{r princomp, fig.cap = princompcap, fig.width = 10}
-
+```{r princomp, fig.cap = princompcap, fig.width = 7, fig.height = 3}
 princompcap <- paste('Principal component analysis on all PROSPECT traits')
 
 mypca <- function(dat, char, ...) {
+    par_names <- paste('mean', params, '5B', sep = '_')
+    names(par_names) <- params
+    n_row <- sum(!is.na(dat[['mean_N_5B']]))
     dat %>% 
-        select_(.dots = longpar_names) %>% 
+        select_(.dots = par_names) %>% 
+        na.omit() %>% 
         princomp(cor = TRUE) %>% 
-        biplot(xlabs = rep(char, nrow(dat)), ...)
+        biplot(xlabs = rep(char, n_row), ...)
 }
 
-par(mfrow = c(1, 3))
-mypca(results_wide, '.', main = 'All data')
-mypca(results_wide_bysp, 'x', main = 'Species means')
-mypca(results_wide_resid, '.', main = 'Species mean residuals')
+data(results_wide)
+data(results_byspecies)
+for (i in 1:2) {
+    if (i == 2) {
+        png(filename = 'figures/pca.png', 
+            width = 7, height = 3, units = 'in', res = 300)
+    }
+    par(mfrow = c(1, 3))
+    mypca(results_wide, '.', main = 'All data')
+    mypca(results_wide_bysp, 'x', main = 'Species means')
+    mypca(results_wide_resid, '.', main = 'Species mean residuals')
+    dev.off()
+}
 
 ```
 
