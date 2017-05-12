@@ -26,9 +26,14 @@ siteplot_naive <- function(specdb_path) {
         dplyr::collect()
 }
 
-dat.site_coords <- function(siteplot) {
+dat.site_coords <- function(specdb_path) {
+    specdb <- dplyr::src_sqlite(specdb_path)
+    sites <- dplyr::tbl(specdb, 'sites')
+    plots <- dplyr::tbl(specdb, 'plots')
+    siteplot <- left_join(sites, plots)
     siteplot %>% 
-        dplyr::group_by(projectcode, sitecode) %>%
-        dplyr::summarize(site_lat = mean(latitude), site_lon = mean(longitude)) %>%
-        dplyr::filter(!is.na(site_lat), !is.na(site_lon))
+        dplyr::group_by(projectcode, sitecode) %>% 
+        dplyr::summarize(site_lat = mean(latitude), site_lon = mean(longitude)) %>% 
+        dplyr::filter(!is.na(site_lat), !is.na(site_lon)) %>% 
+        collect()
 }
