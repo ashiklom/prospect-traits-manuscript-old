@@ -7,9 +7,9 @@ targets:
     command: dat.traits_raw_wide(traits_raw_long)
 
   traits_all_long:
-    command: dat.traits_all_long(results_all_long)
+    command: dat.traits_all_long(results_all_long, traits_raw_long)
 
-  traits_all_wide:
+  traits_wide:
     command: dat.traits_wide(results_wide, traits_raw_wide)
 
   traits_all_valid_long:

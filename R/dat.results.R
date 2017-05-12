@@ -15,13 +15,13 @@ dat.results_all_long <- function(results_raw_long, spectra_info) {
         verify(is_unique(samplecode, modelname, parameter))
 }
 
-dat.results_all_wide <- function(results_raw_long, spectra_info) {
+dat.results_wide <- function(results_raw_long, spectra_info) {
     value_suffix <- c('mean', 'sd', 'q025', 'q500', 'q975')
     value_vars <- paste0('parameter', value_suffix)
     names(value_vars) <- value_suffix
     model_shorten <- function(modelname) gsub('PROSPECT ', '', modelname)
 
-    results_all_wide <- results_raw_long %>% 
+    results_raw_long %>% 
         rename_(.dots = value_vars) %>% 
         mutate(modelname = fct_relabel(modelname, model_shorten)) %>% 
         data.table::setDT(.) %>% 
@@ -29,8 +29,6 @@ dat.results_all_wide <- function(results_raw_long, spectra_info) {
         as_data_frame() %>% 
         left_join(spectra_info) %>% 
         verify(is_unique(samplecode))
-
-    return(results_all_wide)
 }
 
 # averaged by species
@@ -52,5 +50,5 @@ dat.results_species_residuals <- function(results_wide) {
 }
 
 dat.filter_results <- function(dat, model) {
-    filter(dat, modelname == model)
+    filter_(dat, modelname == model)
 }

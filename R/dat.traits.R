@@ -25,14 +25,14 @@ dat.traits_raw_wide <- function(traits_raw_long) {
     spread(traits_raw_long, trait, traitvalue)
 }
 
-dat.traits_all_long <- function(results_all_long) {
+dat.traits_all_long <- function(results_all_long, traits_raw_long) {
     results_all_long %>% 
         inner_join(traits_raw_long) %>% 
         verify(is_unique(samplecode, modelname, parameter, trait))
 }
 
-dat.traits_all_wide <- function(results_all_wide) {
-    results_all_wide %>% 
+dat.traits_wide <- function(results_wide, traits_raw_wide) {
+    results_wide %>% 
         inner_join(traits_raw_wide) %>% 
         verify(is_unique(samplecode))
 }

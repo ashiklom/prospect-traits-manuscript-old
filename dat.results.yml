@@ -5,14 +5,11 @@ targets:
     results_wide_residual:
         command: dat.results_species_residuals(results_wide)
 
-    results_wide:
-        command: dat.filter_results(results_all_wide, usemodel)
-
     results_long:
         command: dat.filter_results(results_all_long, usemodel)
 
-    results_all_wide:
-        command: dat.results_all_wide()
+    results_wide:
+        command: dat.results_wide(results_raw_long, spectra_info)
 
     results_all_long:
         command: dat.results_all_long(results_raw_long, spectra_info)
